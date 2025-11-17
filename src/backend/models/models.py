@@ -1,65 +1,91 @@
-from sqlalchemy.orm import DeclarativeBase, relationship
-from sqlalchemy import Column, Integer, VARCHAR, DateTime, ForeignKey, String
+from sqlalchemy.orm import DeclarativeBase, relationship, Mapped, mapped_column
+from typing import Optional
+from sqlalchemy import String, Integer, DateTime, ForeignKey, Text
 from datetime import datetime
 
 class Base(DeclarativeBase): pass
 
-class Users(Base):
+
+class UserBase(Base):
+
     __tablename__ = "users"
 
-    user_id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    email = Column(VARCHAR(320), unique=True, nullable=False)
-    password_hash = Column(VARCHAR(100), nullable=False)
-    first_name = Column(VARCHAR(50), nullable=False)
-    last_name = Column(VARCHAR(50), nullable=False)
-    avatar_url = Column(VARCHAR(100), unique=True)
-    role = Column(VARCHAR(100))
-    created_at = Column(DateTime, default=datetime.now, nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
+    email: Mapped[str] = mapped_column(String(255), unique = True, nullable = False)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable = False)
+    password_salt: Mapped[str] = mapped_column(String(64), nullable = False)
+    first_name: Mapped[str] = mapped_column(String(50), nullable = False)
+    last_name: Mapped[str] = mapped_column(String(50), nullable = False)
+    avatar_url: Mapped[Optional[str]] = mapped_column(nullable = True)
+    role: Mapped[Optional[str]] = mapped_column(nullable = True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
-    project_lead = relationship('Projects', back_populates='leader')
-    command_member = relationship('Members', back_populates='user')
-    declarations = relationship('Tasks', back_populates='declarant')
+    projects_lead = relationship("ProjectBase", backref="leader")
+    task_declarator = relationship("TaskBase", backref="declarator")
+    membership = relationship('CommandBase', backref="user")
 
+    def __repr__(self) -> str:
+        return f"""User (first_name: {self.first_name},
+                last_name: {self.last_name},
+                email: {self.email},
+                role: {self.role},
+                created_at: {self.created_at})"""
+    
 
-class Projects(Base):
+class ProjectBase(Base):
+
     __tablename__ = "projects"
 
-    project_id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    title = Column(VARCHAR(100), nullable=False)
-    description = Column(String, nullable=False)
-    status = Column(VARCHAR(20), nullable=False)
-    lead_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)
-    created_at = Column(DateTime, default=datetime.now)
-    start_date = Column(DateTime)
-    deadline = Column(DateTime)
+    project_id: Mapped[int] = mapped_column(Integer, autoincrement = True, primary_key = True)
+    title: Mapped[str] = mapped_column(String(255), unique = True)
+    lead_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"))
+    description: Mapped[str] = mapped_column(Text, nullable = False)
+    status: Mapped[str] = mapped_column(String(30), nullable = False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+    deadline: Mapped[datetime] = mapped_column(DateTime, nullable= False)
 
-    leader = relationship('Users', back_populates='project_lead')
-    command = relationship('Members', back_populates='project')
-    tasks = relationship('Tasks', back_populates='project_instance')
+    command = relationship("CommandBase", backref = "project")
 
-class Members(Base):
-    __tablename__ = "members"
+    def __repr__(self) -> str:
+        return f"""Project (title: {self.title},
+                            lead: {self.lead_id},
+                            description: {self.description},
+                            status: {self.status},
+                            created_at: {self.created_at},
+                            deadline: {self.deadline})"""
+    
 
-    member_id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    project_id = Column(Integer, ForeignKey('projects.project_id'), nullable=False)
-    user_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)
-    joined_at = Column(DateTime, default=datetime.now)
-    role = Column(VARCHAR(30))
+class TaskBase(Base):
 
-    project = relationship('Projects', back_populates='command')
-    user = relationship('Users', back_populates='command_member')
+    __tablename__ = 'tasks'
 
-class Tasks(Base):
-    __tablename__ = "tasks"
+    task_id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+    description: Mapped[str] = mapped_column(Text, nullable = False)
+    declarant_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"))
+    project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.project_id"))
 
-    task_id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    created_at = Column(DateTime, default=datetime.now)
-    description = Column(String, nullable=False)
-    declarant = Column(Integer, ForeignKey('users.user_id'), nullable=False)
-    project_id = Column(Integer, ForeignKey('projects.project_id'))
+    def __repr__(self) -> str:
+        return f"""Task (
+        task_id: {self.task_id},
+        created_at: {self.created_at},
+        description: {self.description},
+        declarant_id: {self.declarant_id},
+        project_id: {self.project_id})"""
 
-    project_instance = relationship('Projects', back_populates='tasks')
-    user_declarant = relationship('Users', back_populates='declarations')
 
-if __name__ == '__main__':
-    pass
+class CommandBase(Base):
+
+    __tablename__ = "commands"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
+    project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.project_id"), nullable = False)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"), nullable = False)
+    joined_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+    role: Mapped[str] = mapped_column(String(30), nullable = False)
+
+    def __repr__(self) -> str:
+        return f"""Command (
+        created_at: {self.joined_at},
+        project_id: {self.project_id},
+        user_id: {self.user_id})"""

@@ -1,9 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.core.database import create_tables
+from backend.api.v1.routers import router_v1
 
 
 app = FastAPI()
+
+app.include_router(router_v1)
 
 app.add_middleware(
     CORSMiddleware,
