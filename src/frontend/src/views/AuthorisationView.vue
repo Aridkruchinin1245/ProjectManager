@@ -6,10 +6,11 @@
             <p>Войдите в свою учетную запись</p>
         </div>
 
-        <form>
+        <form @submit.prevent="send_data">
             <div class="form-group">
                 <label for="email">Email</label>
                 <input 
+                    v-model="email"
                     type="email" 
                     id="email" 
                     class="form-control" 
@@ -21,6 +22,7 @@
             <div class="form-group">
                 <label for="password">Пароль</label>
                 <input 
+                    v-model="password"
                     type="password" 
                     id="password" 
                     class="form-control" 
@@ -177,3 +179,29 @@
             font-size: 14px;
         }
 </style>
+
+<script setup>
+ import { ref } from 'vue'
+ import { useRouter } from 'vue-router';
+ import { api_service } from '@/services/api';
+ import { auth } from '@/utils/auth';
+
+    const password = ref("")
+    const email = ref("")
+
+    const router = useRouter()
+
+    const send_data = async() => {
+        const response = await api_service.send_authorisation_data(email.value, password.value)
+        if (response.access_token != undefined) {
+            auth.setToken(response['access_token'])
+            router.push('/list')
+        }
+        else {
+            alert('Такого аккаунта не сущеcтвует, зарегистрируйтесь')
+        }
+        console.log(response)
+    }
+
+
+</script>

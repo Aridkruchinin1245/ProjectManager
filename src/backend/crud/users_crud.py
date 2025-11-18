@@ -1,4 +1,4 @@
-
+from backend.core.security import compare_passwords
 from backend.models.models import UserBase
 from backend.core.database import SessionLocal
 
@@ -16,10 +16,29 @@ def create_user(email, first_name, last_name, password_hash, password_salt):
             session.commit()
 
 
-if __name__ == "__main__":
-    create_user(
-        'testemail',
-        'first_name',
-        'last_name',
-        '123456'
-    )
+def check_user(email, password):
+    with SessionLocal() as session:
+        user = session.query(UserBase).filter(UserBase.email == email).first()
+        if user:
+            check = compare_passwords(user.password_hash, user.password_salt, password)
+            session.commit()
+        else:
+            return False
+        return check
+    
+
+def get_user_data_by_email(email : str):
+    with SessionLocal() as session:
+        user = session.query(UserBase).filter(UserBase.email == email).first()
+        session.commit()
+        data = {
+            'first_name':user.first_name,
+            'last_name':user.last_name,
+            'email':user.email,
+            'role':user.role,
+            'avatar_url':user.avatar_url,
+            'created_at':user.created_at,
+            'projects_lead':user.projects_lead
+        }
+    
+    return data

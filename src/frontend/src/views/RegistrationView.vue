@@ -254,18 +254,22 @@ const check_password = ref("")
 
 const router = useRouter()
 
-const send_data = () => {
+const send_data = async() => {
     if (password.value === check_password.value) {
 
-        const response = api_service.send_registration_data(
+        const response = await api_service.send_registration_data(
             first_name.value,
             last_name.value,
             email.value,
             password.value
         )
-        if (response['access_token'] != undefined) {
+
+        console.log(response)
+
+        if (response != undefined) {
         auth.setToken(response['access_token'])
         router.push('/list')
+
         }
         else {
             alert('Юзер с такой почтой уже существует')

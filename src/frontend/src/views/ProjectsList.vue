@@ -4,10 +4,12 @@
         <router_view/>
         <header class="header">
             <h1>Project Manager</h1>
+            <router-link class="text-link" to="/authorisation">Авторизация</router-link>
             <div class="profile">
                 <div class="avatar">PM</div>
-                <span>Project Manager</span>
+                <span>{{ name }}</span>
             </div>
+            
         </header>
 
         <div class="container">
@@ -32,6 +34,8 @@
         </div>
     </div>
 </template>
+
+
  <style scoped>
         * {
             margin: 0;
@@ -156,4 +160,34 @@
             margin-bottom: 10px;
             color: #2c3e50;
         }
+
+        .text-link {
+            color: black;
+            text-decoration: none;
+        }
     </style>
+
+
+<script setup>
+    import { useRouter } from 'vue-router';
+    import { auth } from '@/utils/auth';
+    import { onBeforeMount, ref } from 'vue';
+    import { api_service } from '@/services/api';
+
+    const router = useRouter()
+    
+    const name = ref("")
+
+    const getName = async() => {
+        name.value = await api_service.get_name(auth.getToken())
+    }
+
+    onBeforeMount(() => {
+    if (!auth.getToken()) {
+        router.push('/registration')
+    }
+    else {
+        getName()
+    }
+    })
+</script>

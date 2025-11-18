@@ -33,5 +33,25 @@ export const api_service = {
         )
         return response
     },
-    
+
+    async send_authorisation_data(email, password) {
+      const response = await API.post('/authorisation',
+        {'email':email,
+          'password':password
+        })
+
+        return response
+    },
+
+    async get_name(token) {
+      const response = await API.get('/get_name', {
+      headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }})
+      const name = response
+      return name
+    }
+
+
 }

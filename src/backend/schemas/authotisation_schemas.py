@@ -5,3 +5,8 @@ class RegistrationHandler(BaseModel):
     last_name: str = Field(max_length=50)
     email: str = Field(max_length=255)
     password: str = Field(max_length=100)
+
+
+class AuthorisationHandler(BaseModel):
+    email: str = Field(max_length=255)
+    password: str = Field(max_length=100)
