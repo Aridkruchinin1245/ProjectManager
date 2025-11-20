@@ -256,26 +256,25 @@ const router = useRouter()
 
 const send_data = async() => {
     if (password.value === check_password.value) {
-
-        const response = await api_service.send_registration_data(
+        try {
+         const response = await api_service.send_registration_data(
             first_name.value,
             last_name.value,
             email.value,
             password.value
         )
-
-        console.log(response)
-
-        if (response != undefined) {
         auth.setToken(response['access_token'])
         router.push('/list')
 
         }
-        else {
+        catch (error) {
             alert('Юзер с такой почтой уже существует')
         }
+        finally {
+            first_name.value = last_name.value = email.value = password.value = check_password.value = ''
+        }
         
-        first_name.value = last_name.value = email.value = password.value = check_password.value = ''
+        
     }
     else {
         alert('Пароли не совпадают!')

@@ -188,17 +188,17 @@
 
     const password = ref("")
     const email = ref("")
-
+    var response = NaN
     const router = useRouter()
 
     const send_data = async() => {
-        const response = await api_service.send_authorisation_data(email.value, password.value)
-        if (response.access_token != undefined) {
+        try {
+            response = await api_service.send_authorisation_data(email.value, password.value)
             auth.setToken(response['access_token'])
             router.push('/list')
         }
-        else {
-            alert('Такого аккаунта не сущеcтвует, зарегистрируйтесь')
+        catch (error) {
+            alert('Такого аккаунта не сущеcтвует, зарегистрируйтесь'+error)
         }
         console.log(response)
     }

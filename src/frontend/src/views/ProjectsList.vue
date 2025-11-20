@@ -5,9 +5,10 @@
         <header class="header">
             <h1>Project Manager</h1>
             <router-link class="text-link" to="/authorisation">Авторизация</router-link>
+            <router-link class="text-link" to="/projectsCreating">Создать новый проект</router-link>
             <div class="profile">
                 <div class="avatar">PM</div>
-                <span>{{ name }}</span>
+                <router-link class="text-link" :to="`/profile/${user_id}`">{{ name }}</router-link>
             </div>
             
         </header>
@@ -48,7 +49,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .header {
@@ -177,9 +178,12 @@
     const router = useRouter()
     
     const name = ref("")
+    const user_id = ref("")
 
     const getName = async() => {
-        name.value = await api_service.get_name(auth.getToken())
+        const response = await api_service.get_name(auth.getToken())
+        name.value = response['first_name'] + " " + response['last_name'] ?? "Не указано"
+        user_id.value = response['user_id']
     }
 
     onBeforeMount(() => {

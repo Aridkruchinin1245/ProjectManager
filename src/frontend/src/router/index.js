@@ -22,6 +22,18 @@ const routes = [
     path: '/profile/:id',
     name: 'profile',
     component: () => import('../views/ProfileView.vue')
+  },
+
+  {
+    path: '/projectsCreating',
+    name: 'projects creating',
+    component: () => import('../views/ProjectsCreating.vue')
+  },
+
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('../views/NotFound.vue') // Или вашу страницу
   }
 
 ]

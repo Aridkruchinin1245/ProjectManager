@@ -3,13 +3,13 @@
 <title>Профиль - Project Manager</title>
     <div class="profile-container">
         <router-link class="back-btn" to="/list">← Назад к проектам</router-link>
-        
+        <span @click="deleteToken" class="back-btn">Выйти</span>
         <div class="profile-header">
             <div class="avatar">ИФ</div>
             <div class="profile-info">
-                <h1>Иван Фёдоров</h1>
-                <div class="role">Project Manager</div>
-                <div class="join-date">В команде с 15 января 2023</div>
+                <h1>{{ name }}</h1>
+                <router-link class="role" to="/">Project Manager</router-link>
+                <div class="join-date">в команде с {{ date }}</div>
             </div>
         </div>
 
@@ -20,19 +20,19 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <span class="info-label">Email</span>
-                            <span class="info-value">ivan.fedorov@company.com</span>
+                            <span class="info-value">{{ email }}</span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Телефон</span>
-                            <span class="info-value">+7 (999) 123-45-67</span>
+                            <span class="info-value">{{ phone }}</span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Отдел</span>
-                            <span class="info-value">Разработка продуктов</span>
+                            <span class="info-value">{{ branch }}</span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">Статус</span>
-                            <span class="info-value" style="color: #27ae60;">Активен</span>
+                            <span class="info-label">Специальность</span>
+                            <span class="info-value">{{ profession }}</span>
                         </div>
                     </div>
                 </div>
@@ -41,19 +41,19 @@
                     <h2>Статистика</h2>
                     <div class="stats-grid">
                         <div class="stat-item">
-                            <div class="stat-number">8</div>
+                            <div class="stat-number">{{ active_projects }}</div>
                             <div class="stat-label">Активных проектов</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-number">24</div>
+                            <div class="stat-number">{{ closed_projects }}</div>
                             <div class="stat-label">Завершённых</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-number">96%</div>
+                            <div class="stat-number">{{ success_projects }}%</div>
                             <div class="stat-label">Успешных</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-number">18</div>
+                            <div class="stat-number">{{ number_of_members }}</div>
                             <div class="stat-label">Участников в команде</div>
                         </div>
                     </div>
@@ -119,7 +119,7 @@
 </template>
 
 
-<style>
+<style scoped>
         * {
             margin: 0;
             padding: 0;
@@ -228,6 +228,11 @@
             color: #2c3e50;
             font-weight: 500;
         }
+        .info-label:hover {
+            color: #3498db;
+            font-weight: 500;  
+            cursor: crosshair;
+        }
 
         .projects-list {
             display: flex;
@@ -301,6 +306,7 @@
             font-weight: 500;
             margin-bottom: 20px;
             transition: color 0.3s;
+            padding: 10px;
         }
 
         .back-btn:hover {
@@ -328,3 +334,54 @@
             }
         }
 </style>
+
+
+<script setup>
+    import {ref, onBeforeMount} from 'vue'
+    import { useRouter } from 'vue-router'
+    import { auth } from '@/utils/auth'
+    import { api_service } from '@/services/api'
+
+    const name = ref("")
+    const email = ref("")
+    const phone = ref("")
+    const date = ref("")
+    const profession = ref("")
+    const active_projects = ref("")
+    const closed_projects = ref("")
+    const success_projects = ref("")
+    const number_of_members = ref("")
+    const branch = ref("")
+
+    const router = useRouter()
+
+    const getUserData = async() => {
+        const response = await api_service.get_name(auth.getToken())
+        name.value = response['first_name'] + " " + response['last_name'] ?? 'не указано'
+        email.value = response['email'] ?? 'Не указано'
+        phone.value = response['phone'] ?? 'Не указано'
+        date.value = response['created_at'] ?? 'Не указано'
+        profession.value = response['role'] ?? 'Не указано'
+        branch.value = response['branch'] ?? 'Не указано'
+
+        active_projects.value = response['active_projects'] ?? '0'
+        closed_projects.value = response['closed_projects'] ?? '0'
+        success_projects.value = response['closed_projects'] ?? '0'
+        number_of_members.value = response['number_of_members'] ?? '0'
+        
+        console.log(response)
+    }
+
+    onBeforeMount(() => {
+    if (!auth.getToken()) {
+        router.push('/registration')
+    }
+    else {
+        getUserData()
+    }
+    })
+
+    const deleteToken = () => {
+        auth.removeToken()
+    }
+</script>

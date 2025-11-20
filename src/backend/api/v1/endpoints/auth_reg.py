@@ -12,7 +12,6 @@ def create_token_registration(data : RegistrationHandler):
         data = dict(data)
         data_password = hash_password(data['password'])
         
-
         create_user(email = data['email'],
                     first_name = data['first_name'],
                     last_name = data['last_name'],

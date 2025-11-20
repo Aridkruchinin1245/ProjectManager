@@ -12,6 +12,7 @@ class UserBase(Base):
 
     user_id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
     email: Mapped[str] = mapped_column(String(255), unique = True, nullable = False)
+    phone: Mapped[str] = mapped_column(String(255), unique = True, nullable = True)
     password_hash: Mapped[str] = mapped_column(String(255), nullable = False)
     password_salt: Mapped[str] = mapped_column(String(255), nullable = False)
     first_name: Mapped[str] = mapped_column(String(50), nullable = False)
@@ -29,7 +30,8 @@ class UserBase(Base):
                 last_name: {self.last_name},
                 email: {self.email},
                 role: {self.role},
-                created_at: {self.created_at})"""
+                created_at: {self.created_at},
+                phone: {self.phone})"""
     
 
 class ProjectBase(Base):
@@ -43,6 +45,7 @@ class ProjectBase(Base):
     status: Mapped[str] = mapped_column(String(30), nullable = False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     deadline: Mapped[datetime] = mapped_column(DateTime, nullable= False)
+    creator_id: Mapped[str] = mapped_column(Integer, nullable=False)
 
     command = relationship("CommandBase", backref = "project")
 
@@ -83,9 +86,53 @@ class CommandBase(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"), nullable = False)
     joined_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     role: Mapped[str] = mapped_column(String(30), nullable = False)
+    command_id: Mapped[int] = mapped_column(Integer, unique=True)
 
     def __repr__(self) -> str:
         return f"""Command (
         created_at: {self.joined_at},
         project_id: {self.project_id},
         user_id: {self.user_id})"""
+    
+
+class CommandMetricBase(Base):
+    
+    __tablename__ = "command_metrics"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    command_id: Mapped[int] = mapped_column(Integer, ForeignKey('commands.command_id'), nullable=False,)
+    succeed_project_percent: Mapped[int] = mapped_column(Integer, nullable=False)
+    average_time: Mapped[int] = mapped_column(Integer, nullable=True)
+    total_time: Mapped[int] = mapped_column(Integer, nullable=True)
+    total_projects: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+
+    def __repr__(self):
+        return f"""Command metrics (
+            id: {self.id},
+            succeed_project_percent: {self.succeed_project_percent},
+            average_time: {self.average_time},
+            total_time: {self.total_time},
+            total_projects: {self.total_projects}
+        )"""
+
+
+class UserMetricBase(Base):
+    
+    __tablename__ = "user_metrics"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.user_id'), nullable=False, unique=True)
+    command_id: Mapped[int] = mapped_column(Integer, ForeignKey('commands.command_id'), nullable=False,)
+    succeed_project_percent: Mapped[int] = mapped_column(Integer, nullable=False)
+    average_time: Mapped[int] = mapped_column(Integer, nullable=True)
+    total_time: Mapped[int] = mapped_column(Integer, nullable=True)
+    total_projects: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+
+    def __repr__(self):
+            return f"""Command metrics (
+                id: {self.id},
+                succeed_project_percent: {self.succeed_project_percent},
+                average_time: {self.average_time},
+                total_time: {self.total_time},
+                total_projects: {self.total_projects}
+            )"""
