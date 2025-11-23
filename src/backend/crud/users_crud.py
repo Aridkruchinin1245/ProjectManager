@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from backend.core.security import compare_passwords
 from backend.models.models import UserBase
 from backend.core.database import SessionLocal
@@ -30,18 +31,22 @@ def check_user(email, password):
 
 def get_user_data_by_email(email : str):
     with SessionLocal() as session:
-        user = session.query(UserBase).filter(UserBase.email == email).first()
-        session.commit()
-        data = {
-            'user_id':user.user_id,
-            'first_name':user.first_name,
-            'last_name':user.last_name,
-            'email':user.email,
-            'role':user.role,
-            'avatar_url':user.avatar_url,
-            'created_at':user.created_at.date(),
-            'projects_lead':user.projects_lead,
-            'phone':user.phone,
-        }
-    
-    return data
+        try:
+            user = session.query(UserBase).filter(UserBase.email == email).first()
+            session.commit()
+            data = {
+                'user_id':user.user_id,
+                'first_name':user.first_name,
+                'last_name':user.last_name,
+                'email':user.email,
+                'role':user.role,
+                'avatar_url':user.avatar_url,
+                'created_at':user.created_at,
+                'projects_lead':user.projects_lead,
+                'phone':user.phone,
+            }
+        
+            return data
+        
+        except:
+            return HTTPException(status_code=404, detail='Юзер не обнаружен')

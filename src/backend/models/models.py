@@ -1,7 +1,7 @@
 from sqlalchemy.orm import DeclarativeBase, relationship, Mapped, mapped_column
 from typing import Optional
-from sqlalchemy import String, Integer, DateTime, ForeignKey, Text
-from datetime import datetime
+from sqlalchemy import String, Integer, Date, ForeignKey, Text
+from datetime import date
 
 class Base(DeclarativeBase): pass
 
@@ -19,7 +19,7 @@ class UserBase(Base):
     last_name: Mapped[str] = mapped_column(String(50), nullable = False)
     avatar_url: Mapped[Optional[str]] = mapped_column(nullable = True)
     role: Mapped[Optional[str]] = mapped_column(nullable = True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+    created_at: Mapped[date] = mapped_column(Date, default=date.today())
 
     projects_lead = relationship("ProjectBase", backref="leader")
     task_declarator = relationship("TaskBase", backref="declarator")
@@ -42,10 +42,11 @@ class ProjectBase(Base):
     title: Mapped[str] = mapped_column(String(255), unique = True)
     lead_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"))
     description: Mapped[str] = mapped_column(Text, nullable = False)
-    status: Mapped[str] = mapped_column(String(30), nullable = False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
-    deadline: Mapped[datetime] = mapped_column(DateTime, nullable= False)
+    status: Mapped[str] = mapped_column(String(30), default='Не в работе')
+    created_at: Mapped[date] = mapped_column(Date, default=date.today())
+    deadline: Mapped[date] = mapped_column(Date, nullable= False)
     creator_id: Mapped[str] = mapped_column(Integer, nullable=False)
+    start_date: Mapped[date] = mapped_column(Date, default=date.today())
 
     command = relationship("CommandBase", backref = "project")
 
@@ -63,7 +64,7 @@ class TaskBase(Base):
     __tablename__ = 'tasks'
 
     task_id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+    created_at: Mapped[date] = mapped_column(Date, default=date.today)
     description: Mapped[str] = mapped_column(Text, nullable = False)
     declarant_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"))
     project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.project_id"))
@@ -84,7 +85,7 @@ class CommandBase(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
     project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.project_id"), nullable = False)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"), nullable = False)
-    joined_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+    joined_at: Mapped[date] = mapped_column(Date, default=date.today)
     role: Mapped[str] = mapped_column(String(30), nullable = False)
     command_id: Mapped[int] = mapped_column(Integer, unique=True)
 

@@ -187,7 +187,7 @@
     }
 
     onBeforeMount(() => {
-    if (!auth.getToken()) {
+    if (auth.getToken() == 'undefined') {
         router.push('/registration')
     }
     else {

@@ -8,7 +8,7 @@
         <div class="create-project-form">
         <h2>Создать новый проект</h2>
 
-        <form action="/create-project" method="post" class="form">
+        <form action="/create-project" method="post" class="form" @submit.prevent="sendData()">
             <div class="form-group">
                 <label for="projectName">Название проекта</label>
                 <input type="text" id="projectName" name="projectName" v-model="title" required />
@@ -22,8 +22,8 @@
              <div class="form-group">
                 <label for="teamSelect">Выберите команду</label>
                 <select id="teamSelect" v-model="selectedTeam" @change="chooseCommand">
-                    <option disabled value="">-- выберите команду --</option>
-                    <option>Создать новую команду...</option>
+                    <option disabled value="">-- пока не доступно --</option>
+                    <!-- <option>Создать новую команду...</option> -->
                     <option v-for="team in teams" :key="team.id" :value="team.id">{{ team.name }}</option>
                 </select>
                 <button class="btn-submit">Узнать о команде</button>
@@ -171,7 +171,7 @@
     
     const name = ref("")
     const user_id = ref("")
-    const selectedTeam = ref("")
+    const team_id = ref("")
     const title = ref("")
     const description = ref("")
     const deadline = ref("")
@@ -192,11 +192,11 @@
     })
 
     const chooseCommand = () => {
-        alert(selectedTeam.value)
-        alert(deadline.value)
+        alert(team_id.value)
     }
 
-    // const sendData = () => {
-    //     api_service.send_project_data()
-    // }
+    const sendData = () => {
+        api_service.send_project_data(auth.getToken(), title.value,
+         description.value, 1111, deadline.value)
+    }
 </script>

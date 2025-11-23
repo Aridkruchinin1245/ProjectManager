@@ -61,12 +61,12 @@ export const api_service = {
       return response
     },
  
-    // async send_project_data(token, title, description, selected_team, deadline) {
-    //   const response = await API.post('/projectCreating', {title}, {
-    //   headers: {
-    //   'Authorization': `Bearer ${token}`,
-    //   'Content-Type': 'application/json'
-    //   }})
-    //     return response
-    //   },
+    async send_project_data(token, title, description, command_id, deadline) {
+      const response = await API.post('/projectsCreating', {"title":title, "description":description, "command_id":command_id, "deadline":deadline}, {
+      headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+      }})
+        return response
+      },
     }
