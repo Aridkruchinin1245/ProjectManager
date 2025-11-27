@@ -16,20 +16,37 @@
         <div class="container">
             <aside class="sidebar">
                 <div class="projects-header">
-                    <h2>Мои проекты</h2>
+                    <h2>Проекты</h2>
                 </div>
                 <div class="projects-list">
-                    <div class="project-item active">
-                        <div class="project-name">Веб-сайт компании</div>
-                        <div class="project-meta">12 задач • 3 участника</div>
+                    <div class="project-item active" v-for="project in projects_ref" :key="project.id" @click="getInformation(project)">
+                        <div class="project-name">{{ project.title }}</div>
                     </div>
                 </div>
             </aside>
 
             <main class="content">
-                <div class="welcome-message">
+                <div class="welcome-message" v-if="!project_title">
                     <h2>Добро пожаловать в Project Manager</h2>
                     <p>Выберите проект из списка слева для начала работы</p>
+                </div>
+
+                <div class="welcome-message" v-else>
+                    <div class="block-main">
+                        <h2>{{ project_title }}</h2>
+                        <div>{{ project_status }}</div>  
+                    </div>
+
+                    <div class="block-dates">
+                        <li>Создан: {{project_created_at}}</li>
+                        <li>Запланированное начало: {{ project_start_date }}</li>
+                        <li>Дедлайн: {{ project_deadline }}</li>
+                    </div>
+
+                    <div class="block-status">
+                        <div>{{ project_leader }}</div>
+                        <div>{{ project_description }}</div>  
+                    </div>
                 </div>
             </main>
         </div>
@@ -125,11 +142,15 @@
         }
 
         .project-item:hover {
-            background: #34495e;
+            background: #a4b1bd;
         }
 
         .project-item.active {
-            background: #34495e;
+            background: #2c3e50;
+            border-left-color: #3498db;
+        }
+        .project-item.active:hover {
+            background: #677888;
             border-left-color: #3498db;
         }
 
@@ -144,15 +165,17 @@
         }
 
         .content {
-            flex: 1;
+            display: flex;
+            flex-direction: column; /* Элементы в колонку */
             padding: 30px;
             background: #f8f9fa;
-            overflow-y: auto;
+            flex: 1;
+            justify-content: flex-start; /* Вертикально сверху */
+            align-items: center; /* Горизонтальное центрирование */
         }
 
         .welcome-message {
             text-align: center;
-            margin-top: 100px;
             color: #7f8c8d;
         }
 
@@ -166,6 +189,25 @@
             color: black;
             text-decoration: none;
         }
+
+        .block-main {
+            padding: 10px;
+            border-bottom: 1px solid #3498db;
+            text-align: start;
+        }
+
+        .block-dates {
+            padding: 10px;
+            border-bottom: 1px solid #3498db;
+            text-align: start;
+            color: #2c3e50;
+        }
+        .block-status {
+            padding: 10px;
+            border-bottom: 1px solid #3498db;
+            text-align: start;
+        }
+
     </style>
 
 
@@ -179,11 +221,35 @@
     
     const name = ref("")
     const user_id = ref("")
+    const projects_ref = ref()
+
+    const project_title = ref("")
+    const project_description = ref("")
+    const project_status = ref("")
+    const project_leader = ref("")
+    const project_created_at = ref("")
+    const project_deadline = ref("")
+    const project_start_date = ref("")
 
     const getName = async() => {
+        try {
         const response = await api_service.get_name(auth.getToken())
         name.value = response['first_name'] + " " + response['last_name'] ?? "Не указано"
         user_id.value = response['user_id']
+        }
+        catch (error) {
+            if (error.status == '401') {
+                router.push('/registration')
+            }
+            else if (error.status == '500') {
+                alert('Ошибка на сервере, попробуйте снова')
+            }
+        }
+    }
+
+    const getProjects = async() => {
+        const projects = await api_service.get_projects(auth.getToken())
+        projects_ref.value = projects
     }
 
     onBeforeMount(() => {
@@ -192,6 +258,16 @@
     }
     else {
         getName()
+        getProjects()
     }
     })
+
+    const getInformation = (project) => {
+        project_title.value = project.title
+        project_status.value = project.status
+        project_created_at.value = project.created_at
+        project_start_date.value = project.start_date
+        project_description.value = project.description
+        project_deadline.value = project.deadline
+    }
 </script>

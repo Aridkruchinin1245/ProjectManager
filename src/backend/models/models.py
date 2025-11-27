@@ -58,6 +58,14 @@ class ProjectBase(Base):
                             created_at: {self.created_at},
                             deadline: {self.deadline})"""
     
+    def to_dict(self):
+        data = {}
+        for c in self.__table__.columns:
+            value = getattr(self, c.name)
+            data[c.name] = value
+        return data
+
+    
 
 class TaskBase(Base):
 

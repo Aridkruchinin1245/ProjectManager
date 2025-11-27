@@ -30,8 +30,13 @@
             </div>
 
             <div class="form-group">
+                <label for="start_date">Предполагаемая дата начала работы</label>
+                <input type="date" id="start_date" name="start_date" v-model="start_date" :min="getToday()" required />
+            </div>
+
+            <div class="form-group">
                 <label for="deadline">Срок завершения</label>
-                <input type="date" id="deadline" name="deadline" v-model="deadline" required />
+                <input type="date" id="deadline" name="deadline" v-model="deadline" :min="getToday()" required />
             </div>
 
             <div class="form-actions">
@@ -175,6 +180,7 @@
     const title = ref("")
     const description = ref("")
     const deadline = ref("")
+    const start_date = ref("")
 
     const getName = async() => {
         const response = await api_service.get_name(auth.getToken())
@@ -195,8 +201,26 @@
         alert(team_id.value)
     }
 
-    const sendData = () => {
-        api_service.send_project_data(auth.getToken(), title.value,
-         description.value, 1111, deadline.value)
+    const sendData = async() => {
+        try {
+         await api_service.send_project_data(auth.getToken(), title.value,
+         description.value, 1111, deadline.value) 
+         title.value = deadline.value = team_id.value = description.value = ''
+        }
+
+        catch (error) {
+            if (error.status === 401) {
+                router.push('/registration')
+            }
+            else if (error.status === 409) {
+                alert('Проект с таким названием уже существует')
+            }
+        }
+
+    }
+
+    const getToday = () => {
+        const today = new Date();
+        return today.toISOString().split('T')[0];
     }
 </script>

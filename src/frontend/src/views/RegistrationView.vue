@@ -268,13 +268,16 @@ const send_data = async() => {
 
         }
         catch (error) {
-            alert('Юзер с такой почтой уже существует')
+            if (error.status === 409) {
+                alert('Такой пользователь уже существует')
+            }
+            // else if (error.status === 500) {
+            //     alert('Ошибка на сервере')
+            // }
         }
         finally {
             first_name.value = last_name.value = email.value = password.value = check_password.value = ''
         }
-        
-        
     }
     else {
         alert('Пароли не совпадают!')

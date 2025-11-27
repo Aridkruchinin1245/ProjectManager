@@ -1,17 +1,18 @@
-from fastapi import APIRouter, HTTPException, Security
+from fastapi import APIRouter, HTTPException, Security, status
 from fastapi_jwt import JwtAuthorizationCredentials
 from backend.core.security import access_security
-from backend.crud.users_crud import get_user_data_by_email
 from backend.schemas.project_schemas import ProjectSchema
-from backend.crud.projects_crud import create_project
+from backend.crud.projects_crud import create_project, get_projects
 from datetime import datetime
+from backend.crud.users_crud import check_user
 
 project_router = APIRouter()
 
 @project_router.post('/projectsCreating')
-def creating_project(user_data: ProjectSchema, credentials: JwtAuthorizationCredentials = Security(access_security)):
+async def creating_project(user_data: ProjectSchema, credentials: JwtAuthorizationCredentials = Security(access_security)):
     try:
         credentials_data = credentials.subject
+
         create_project(title=user_data.title,
                        description=user_data.description,
                        deadline=datetime.strptime(user_data.deadline, '%Y-%m-%d').date(),
@@ -19,4 +20,17 @@ def creating_project(user_data: ProjectSchema, credentials: JwtAuthorizationCred
                         )
                        
     except Exception as e: 
-        raise HTTPException(status_code=500, detail=f"Ошибка создания проекта {e}")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f'Ошибка создания проекта {e}')
+    
+@project_router.get('/getProjects')
+async def send_projects(credentials: JwtAuthorizationCredentials = Security(access_security)):
+    try:
+        data = credentials.subject
+
+        if check_user(email=data['email'], password=data['password']):
+            return get_projects()
+        else:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Такого пользователя не существует')
+        
+    except HTTPException:
+        raise

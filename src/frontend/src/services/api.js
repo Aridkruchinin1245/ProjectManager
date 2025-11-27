@@ -28,9 +28,6 @@ API.interceptors.response.use(
       // Перенаправление на страницу регистрации
       router.push('/registration')
     }
-    else if (error.response && error.response.status === 500) {
-      alert('Ошибка на сервере, уже работаем над ее исправлением')
-    }
     return Promise.reject(error)
   }
 )
@@ -69,4 +66,13 @@ export const api_service = {
       }})
         return response
       },
+    async get_projects(token) {
+      const response = await API.get('/getProjects', {
+      headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+      }})
+        return response
+      }
     }
+    

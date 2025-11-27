@@ -50,3 +50,7 @@ def get_user_data_by_email(email : str):
         
         except:
             return HTTPException(status_code=404, detail='Юзер не обнаружен')
+        
+
+if __name__=='__main__':
+    print(check_user(email='misakrucinin80@gmail.com', password='1'))

@@ -9,7 +9,7 @@ def create_project(email : str, title: str, description: str, deadline: datetime
         creator_id = session.query(UserBase).filter(UserBase.email == email).first().user_id
         if not lead_id:
             lead_id = creator_id
-            
+
         session.add(ProjectBase(
             title = title,
             lead_id = lead_id,
@@ -20,6 +20,16 @@ def create_project(email : str, title: str, description: str, deadline: datetime
         ))
         session.commit()
 
+
+def get_projects(): 
+    try:
+        with SessionLocal() as session:
+            data = [project.to_dict() for project in session.query(ProjectBase).all()]
+            session.commit()
+        return data
+    
+    except Exception as e:
+        raise 
 
 if __name__ == "__main__":
     create_project('someproject', 1)

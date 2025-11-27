@@ -4,6 +4,8 @@
     <div class="profile-container">
         <router-link class="back-btn" to="/list">← Назад к проектам</router-link>
         <span @click="deleteToken" class="back-btn">Выйти</span>
+        <span class="back-btn">Изменить фото профиля</span>
+        <input type="file"/>
         <div class="profile-header">
             <div class="avatar">ИФ</div>
             <div class="profile-info">
