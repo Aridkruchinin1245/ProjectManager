@@ -20,7 +20,7 @@ async def create_token_registration(data : RegistrationHandler):
                         password_salt = data_password['salt_str'])
             
             token = create_token(data = data)
-            return {'access_token' : token, 'data':data}
+            return {'access_token' : token, }
         
         else:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Аккаунт уже существует')

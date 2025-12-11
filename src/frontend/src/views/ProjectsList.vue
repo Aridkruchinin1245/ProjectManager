@@ -3,9 +3,10 @@
     <div>
         <router_view/>
         <header class="header">
-            <h1>Project Manager</h1>
+            <h1 @click="router.push('/')">Project Manager</h1>
             <router-link class="text-link" to="/authorisation">Авторизация</router-link>
             <router-link class="text-link" to="/projectsCreating">Создать новый проект</router-link>
+            <router-link class="text-link" to="/users">Пользователи</router-link>
             <div class="profile">
                 <div class="avatar">PM</div>
                 <router-link class="text-link" :to="`/profile/${user_id}`">{{ name }}</router-link>
@@ -34,7 +35,16 @@
                 <div class="welcome-message" v-else>
                     <div class="block-main">
                         <h2>{{ project_title }}</h2>
-                        <div>{{ project_status }}</div>  
+                        <div>Статус: {{ project_status }} </div>  
+                        <div>Лидер: 
+                            <router-link class="text-link" :to="`profile/${project_leader_id}`" v-if="project_leader_id">{{ project_leader_name }}</router-link>
+                            <div v-else>{{ project_leader_name }}</div>
+                        </div>
+                        <div>
+                            Создатель:
+                            <router-link class="text-link" :to="`profile/${project_creator_id}`" v-if="project_creator_id">{{ project_creator_name }}</router-link>
+                            <div v-else>{{ project_creator_name }}</div>
+                        </div>
                     </div>
 
                     <div class="block-dates">
@@ -44,8 +54,8 @@
                     </div>
 
                     <div class="block-status">
-                        <div>{{ project_leader }}</div>
                         <div>{{ project_description }}</div>  
+
                     </div>
                 </div>
             </main>
@@ -61,7 +71,9 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Arial, sans-serif;
         }
-
+        router-link {
+            padding: 10px;
+        }
         body {
             display: flex;
             flex-direction: column;
@@ -226,10 +238,13 @@
     const project_title = ref("")
     const project_description = ref("")
     const project_status = ref("")
-    const project_leader = ref("")
+    const project_leader_id = ref("")
+    const project_leader_name = ref("")
     const project_created_at = ref("")
     const project_deadline = ref("")
     const project_start_date = ref("")
+    const project_creator_id = ref("")
+    const project_creator_name = ref("")
 
     const getName = async() => {
         try {
@@ -263,11 +278,15 @@
     })
 
     const getInformation = (project) => {
-        project_title.value = project.title
-        project_status.value = project.status
-        project_created_at.value = project.created_at
-        project_start_date.value = project.start_date
-        project_description.value = project.description
-        project_deadline.value = project.deadline
+        project_title.value = project.title ?? 'Не указано'
+        project_status.value = project.status ?? 'Не указано'
+        project_created_at.value = project.created_at ?? 'Не указано'
+        project_start_date.value = project.start_date ?? 'Не указано'
+        project_description.value = project.description ?? 'Не указано'
+        project_deadline.value = project.deadline ?? 'Не указано'
+        project_creator_id.value = project.creator_id ?? 'Не указано'
+        project_leader_id.value = project.lead_id ?? 'Не указано'
+        project_creator_name.value = project.creator_name ?? 'Не указано'
+        project_leader_name.value = project.leader_name ?? 'Не указано'
     }
 </script>

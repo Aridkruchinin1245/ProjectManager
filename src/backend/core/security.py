@@ -29,6 +29,13 @@ def compare_passwords(password_from_db : str, salt : str, password_from_user : s
         return True
     else:
         return False
+    
+
+def check_admin(email:str, password:str):
+    if email == settings.ADMIN_EMAIL and password == settings.ADMIN_PASSWORD:
+        return True
+    else:
+        return False
 
 
 if __name__ == "__main__":

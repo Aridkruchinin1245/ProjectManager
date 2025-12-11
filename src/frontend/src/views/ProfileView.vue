@@ -36,6 +36,10 @@
                             <span class="info-label">Специальность</span>
                             <span class="info-value">{{ profession }}</span>
                         </div>
+                        <div class="info-item">
+                            <span class="info-label">Статус</span>
+                            <span class="info-value">{{ profession }}</span>
+                        </div>
                     </div>
                 </div>
 
@@ -340,7 +344,7 @@
 
 <script setup>
     import {ref, onBeforeMount} from 'vue'
-    import { useRouter } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
     import { auth } from '@/utils/auth'
     import { api_service } from '@/services/api'
 
@@ -356,9 +360,10 @@
     const branch = ref("")
 
     const router = useRouter()
+    const route = useRoute()
 
     const getUserData = async() => {
-        const response = await api_service.get_name(auth.getToken())
+        const response = await api_service.get_name_id(route.params.id)
         name.value = response['first_name'] + " " + response['last_name'] ?? 'не указано'
         email.value = response['email'] ?? 'Не указано'
         phone.value = response['phone'] ?? 'Не указано'

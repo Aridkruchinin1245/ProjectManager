@@ -198,7 +198,9 @@
             router.push('/list')
         }
         catch (error) {
-            alert('Такого аккаунта не сущеcтвует, зарегистрируйтесь'+error)
+            if (error.status === 404) {
+                alert('Такого аккаунта не сущеcтвует, зарегистрируйтесь')
+            }
         }
         console.log(response)
     }

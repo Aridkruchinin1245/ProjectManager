@@ -52,5 +52,38 @@ def get_user_data_by_email(email : str):
             return HTTPException(status_code=404, detail='Юзер не обнаружен')
         
 
-if __name__=='__main__':
-    print(check_user(email='misakrucinin80@gmail.com', password='1'))
+def delete_users():
+    with SessionLocal() as session:
+        session.query(UserBase).delete()
+        session.commit()
+
+
+def get_user_data_by_id(id : int):
+    with SessionLocal() as session:
+        try:
+            user = session.query(UserBase).filter(UserBase.user_id == id).first()
+            session.commit()
+            data = {
+                'user_id':user.user_id,
+                'first_name':user.first_name,
+                'last_name':user.last_name,
+                'email':user.email,
+                'role':user.role,
+                'avatar_url':user.avatar_url,
+                'created_at':user.created_at,
+                'projects_lead':user.projects_lead,
+                'phone':user.phone,
+            }
+        
+            return data
+        
+        except:
+            return HTTPException(status_code=404, detail='Юзер не обнаружен')
+
+
+def all_users():
+    with SessionLocal() as session:
+        users = [user.to_dict() for user in session.query(UserBase).all()]
+        session.commit()
+    
+    return users

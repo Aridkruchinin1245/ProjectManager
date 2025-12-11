@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
+    ADMIN_EMAIL: str
+    ADMIN_PASSWORD: str
+
     model_config = SettingsConfigDict(env_file='.env')
 
 settings = Settings()

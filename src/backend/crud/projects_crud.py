@@ -1,3 +1,4 @@
+from backend.crud.users_crud import get_user_data_by_id
 from backend.models.models import ProjectBase, UserBase
 from backend.core.database import SessionLocal
 from datetime import datetime 
@@ -26,10 +27,24 @@ def get_projects():
         with SessionLocal() as session:
             data = [project.to_dict() for project in session.query(ProjectBase).all()]
             session.commit()
+
+        for project_id in range(len(data)):
+            leader_name = get_user_data_by_id(data[project_id]['lead_id'])['first_name'] + ' ' + get_user_data_by_id(data[project_id]['lead_id'])['last_name']
+                              
+            creator_name = get_user_data_by_id(data[project_id]['creator_id'])['first_name'] + ' ' + get_user_data_by_id(data[project_id]['creator_id'])['last_name'] 
+                              
+            data[project_id]['leader_name'] = leader_name
+            data[project_id]['creator_name'] = creator_name
+
         return data
     
     except Exception as e:
         raise 
 
-if __name__ == "__main__":
-    create_project('someproject', 1)
+
+def delete_projects():
+    with SessionLocal() as session:
+        session.query(ProjectBase).delete()
+        session.commit()
+        
+

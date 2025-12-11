@@ -1,7 +1,8 @@
 from sqlalchemy.orm import DeclarativeBase, relationship, Mapped, mapped_column
 from typing import Optional
-from sqlalchemy import String, Integer, Date, ForeignKey, Text
+from sqlalchemy import String, Integer, Date, ForeignKey, Text, CheckConstraint
 from datetime import date
+ 
 
 class Base(DeclarativeBase): pass
 
@@ -24,6 +25,7 @@ class UserBase(Base):
     projects_lead = relationship("ProjectBase", backref="leader")
     task_declarator = relationship("TaskBase", backref="declarator")
     membership = relationship('CommandBase', backref="user")
+    creatorship = relationship("ProjectBase", backref="creator")
 
     def __repr__(self) -> str:
         return f"""User (first_name: {self.first_name},
@@ -34,9 +36,25 @@ class UserBase(Base):
                 phone: {self.phone})"""
     
 
+    def to_dict(self):
+        data = {}
+
+        for c in self.__table__.columns:
+            if c.name != 'password_salt' and c.name != 'password_hash':
+                value = getattr(self, c.name)
+                data[c.name] = value
+
+        return data
+    
+
 class ProjectBase(Base):
 
     __tablename__ = "projects"
+
+    __table_args__ = (
+        CheckConstraint('deadline > created_at', name='deadline_after_creation'),
+        CheckConstraint("status IN ('Не в работе', 'В работе', 'Завершен')", name='valid_status'),
+    )
 
     project_id: Mapped[int] = mapped_column(Integer, autoincrement = True, primary_key = True)
     title: Mapped[str] = mapped_column(String(255), unique = True)
@@ -60,12 +78,13 @@ class ProjectBase(Base):
     
     def to_dict(self):
         data = {}
+
         for c in self.__table__.columns:
             value = getattr(self, c.name)
             data[c.name] = value
+
         return data
 
-    
 
 class TaskBase(Base):
 

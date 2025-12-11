@@ -1,3 +1,4 @@
+
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
@@ -28,6 +29,18 @@ const routes = [
     path: '/projectsCreating',
     name: 'projects creating',
     component: () => import('../views/ProjectsCreating.vue')
+  },
+
+  {
+    path: '/admin',
+    name: 'admin page',
+    component: () => import('../views/AdminView.vue')
+  },
+
+  {
+    path: '/users',
+    name: 'user list',
+    component: () => import('../views/UserList.vue')
   },
 
   {
