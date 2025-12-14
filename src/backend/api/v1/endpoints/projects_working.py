@@ -6,7 +6,7 @@ from backend.crud.projects_crud import create_project, get_projects
 from datetime import datetime
 from backend.crud.users_crud import check_user
 
-project_router = APIRouter()
+project_router = APIRouter(tags=['project processes'])
 
 @project_router.post('/projectsCreating')
 async def creating_project(user_data: ProjectSchema, credentials: JwtAuthorizationCredentials = Security(access_security)):

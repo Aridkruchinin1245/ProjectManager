@@ -5,7 +5,7 @@ from fastapi_jwt import JwtAuthorizationCredentials
 from backend.crud.users_crud import all_users, check_user, get_user_data_by_email, get_user_data_by_id
 
 
-user_data_router = APIRouter()
+user_data_router = APIRouter(tags=['user proccesesсч'])
 
 @user_data_router.get('/get_name')
 async def get_name(credentials: JwtAuthorizationCredentials = Security(access_security)):

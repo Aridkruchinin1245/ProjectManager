@@ -113,6 +113,16 @@ export const api_service = {
     });
   },
 
+  async add_role(token, role) {
+    await API.put('/addRole', {'role':role}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    }
+  )
+  },
+
   async all_users(token) {
     const response = await API.get('/users', {
       headers: {

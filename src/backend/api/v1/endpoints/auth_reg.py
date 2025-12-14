@@ -4,7 +4,7 @@ from backend.schemas.authotisation_schemas import RegistrationHandler, Authorisa
 from backend.crud.users_crud import create_user, check_user
 
 
-auth_reg_router = APIRouter()
+auth_reg_router = APIRouter(tags=['registration, authorisation'])
 
 @auth_reg_router.post('/registration')
 async def create_token_registration(data : RegistrationHandler):

@@ -3,6 +3,8 @@ from backend.api.v1.endpoints.auth_reg import auth_reg_router
 from backend.api.v1.endpoints.user_data import user_data_router
 from backend.api.v1.endpoints.projects_working import project_router
 from backend.api.v1.endpoints.admin_handlers import admin_router
+from backend.api.v1.endpoints.put_user import put_router
+
 
 router_v1 = APIRouter()
 
@@ -10,3 +12,4 @@ router_v1.include_router(auth_reg_router)
 router_v1.include_router(user_data_router)
 router_v1.include_router(project_router)
 router_v1.include_router(admin_router)
+router_v1.include_router(put_router)

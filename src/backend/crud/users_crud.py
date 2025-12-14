@@ -87,3 +87,10 @@ def all_users():
         session.commit()
     
     return users
+
+
+def update_role_email(role: str, email: str):
+    with SessionLocal() as session:
+        user = session.query(UserBase).filter(UserBase.email == email).first()
+        user.role = role
+        session.commit()

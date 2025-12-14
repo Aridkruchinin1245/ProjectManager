@@ -17,6 +17,11 @@
                     <i class="fas fa-arrow-left"></i>
                     Назад к проектам
                 </router-link>
+
+                <router-link to="/list" class="back-btn">
+                    <i class="fas"></i>
+                    Создать команду
+                </router-link>
             </div>
 
             <div class="filters">
@@ -26,10 +31,59 @@
                 </div>
                 <select class="filter-select">
                     <option value="all">Все роли</option>
-                    <option value="manager">Менеджер проекта</option>
-                    <option value="developer">Разработчик</option>
-                    <option value="designer">Дизайнер</option>
-                    <option value="analyst">Аналитик</option>
+                    <option>CEO (Chief Executive Officer)</option>
+                    <option>CTO (Chief Technology Officer)</option>
+                    <option>CIO (Chief Information Officer)</option>
+                    <option>Head of Development</option>
+                    <option>Head of Product</option>
+                    <option>Product Owner</option>
+                    <option>Product Manager</option>
+                    <option>Project Manager</option>
+                    <option>Program Manager</option>
+                    <option>Scrum Master</option>
+                    <option>Business Analyst</option>
+                    <option>Systems Analyst</option>
+                    <option>Product Analyst</option>
+                    <option>Data Analyst</option>
+                    <option>BI Analyst</option>
+                    <option>Software Architect</option>
+                    <option>Solution Architect</option>
+                    <option>Data Architect</option>
+                    <option>Tech Lead</option>
+                    <option>Team Lead</option>
+                    <option>Engineering Manager</option>
+                    <option>Backend Developer</option>
+                    <option>Frontend Developer</option>
+                    <option>Full Stack Developer</option>
+                    <option>Java Developer</option>
+                    <option>Python Developer</option>
+                    <option>C# / .NET Developer</option>
+                    <option>Go Developer</option>
+                    <option>PHP Developer</option>
+                        <option>Node.js Developer</option>
+                        <option>iOS Developer</option>
+                        <option>Android Developer</option>
+                        <option>React Developer</option>
+                        <option>Vue.js Developer</option>
+                        <option>Data Scientist</option>
+                        <option>Data Engineer</option>
+                        <option>ML Engineer</option>
+                        <option>QA Engineer (Manual)</option>
+                        <option>QA Automation Engineer</option>
+                        <option>DevOps Engineer</option>
+                        <option>System Administrator</option>
+                        <option>SRE (Site Reliability Engineer)</option>
+                        <option>Security Engineer</option>
+                        <option>Cloud Engineer</option>
+                        <option>UX/UI Designer</option>
+                        <option>Product Designer</option>
+                        <option>UX Researcher</option>
+                        <option>Technical Writer</option>
+                        <option>SEO Specialist</option>
+                        <option>Delivery Manager</option>
+                        <option>Customer Success Manager</option>
+                        <option>Tech Support Engineer</option>
+                        <option>IT Specialist</option>
                 </select>
                 <select class="filter-select">
                     <option value="active">Активные</option>

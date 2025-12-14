@@ -1,12 +1,9 @@
-from pydantic import BaseModel, Field
-
-class RegistrationHandler(BaseModel):
-    first_name: str = Field(max_length=50)
-    last_name: str = Field(max_length=50)
-    email: str = Field(max_length=255)
-    password: str = Field(max_length=100)
-
+from pydantic import BaseModel, Field, EmailStr
 
 class AuthorisationHandler(BaseModel):
-    email: str = Field(max_length=255)
-    password: str = Field(max_length=100)
+    email: EmailStr = Field(..., min_length=1, max_length=255, description='емэйл юзера, обязательно правильный формат')
+    password: str = Field(..., max_length=100, description='пароль (1,100)')
+
+class RegistrationHandler(AuthorisationHandler):
+    first_name: str = Field(..., min_length=1, max_length=100, description='имя юзера (1,100)')
+    last_name: str = Field(..., min_length=1, max_length=100, description='фамилия юзера (1,100)')

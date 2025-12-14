@@ -63,10 +63,9 @@ class ProjectBase(Base):
     status: Mapped[str] = mapped_column(String(30), default='Не в работе')
     created_at: Mapped[date] = mapped_column(Date, default=date.today())
     deadline: Mapped[date] = mapped_column(Date, nullable= False)
-    creator_id: Mapped[str] = mapped_column(Integer, nullable=False)
+    creator_id: Mapped[int] = mapped_column(Integer, nullable=False)
     start_date: Mapped[date] = mapped_column(Date, default=date.today())
-
-    command = relationship("CommandBase", backref = "project")
+    command_id: Mapped[int] = mapped_column(Integer, nullable=False)
 
     def __repr__(self) -> str:
         return f"""Project (title: {self.title},
@@ -114,7 +113,7 @@ class CommandBase(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"), nullable = False)
     joined_at: Mapped[date] = mapped_column(Date, default=date.today)
     role: Mapped[str] = mapped_column(String(30), nullable = False)
-    command_id: Mapped[int] = mapped_column(Integer, unique=True)
+    command_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.command_id"), unique=True)
 
     def __repr__(self) -> str:
         return f"""Command (

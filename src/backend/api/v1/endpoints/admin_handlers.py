@@ -5,7 +5,7 @@ from backend.core.security import check_admin
 from backend.crud.projects_crud import delete_projects
 from backend.crud.users_crud import delete_users
 
-admin_router = APIRouter()
+admin_router = APIRouter(tags=['admin'])
 
 @admin_router.delete('/deleteProjects')
 def delete_project_handler(credentials: JwtAuthorizationCredentials = Security(access_security)):
