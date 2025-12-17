@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from backend.core.config import settings
 from backend.models.models import Base
-from backend.services.logger import logger
+# from backend.services.logger import logger
 
 DATABASE_URL = settings.DATABASE_URL
 
@@ -20,9 +20,10 @@ SessionLocal = sessionmaker(
 def create_tables():
     try:
         Base.metadata.create_all(bind=engine)
-        logger.info('таблицы созданы')
+        # logger.info('таблицы созданы')
     except Exception as e:
-        logger.error(f'Ошибка создания бд {e}')
+        # logger.error(f'Ошибка создания бд {e}')
+        pass
 
 
 def get_db():

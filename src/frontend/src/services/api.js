@@ -2,7 +2,7 @@ import axios from "axios";
 import router from "@/router";
 
 const API = axios.create({
-  baseURL: process.env.VUE_APP_API_URL || "http://192.168.1.3:8000", // <=== insert there
+  baseURL: process.env.VUE_APP_API_URL || "http://172.18.0.3:8000", // <=== insert there
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

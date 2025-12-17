@@ -1,0 +1,25 @@
+
+services:
+  backend:
+    build:
+      context: src/
+      dockerfile: backend/Dockerfile
+    ports: 
+      - 8000:8000
+
+  frontend:
+    build:
+      context: src/frontend
+      dockerfile: Dockerfile
+    ports: 
+      - 8080:8080
+
+  database:
+    image: postgres:16-alpine
+    ports: 
+      - 5432:5432
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+
