@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.core.database import create_tables
 from backend.api.v1.routers import router_v1
 
+create_tables()
 
 app = FastAPI()
 
@@ -15,6 +16,4 @@ app.add_middleware(
     allow_methods = ["*"],
     allow_headers = ["*"]
 )
-
-create_tables()
 

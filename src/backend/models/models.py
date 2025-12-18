@@ -65,7 +65,7 @@ class ProjectBase(Base):
     deadline: Mapped[date] = mapped_column(Date, nullable= False)
     creator_id: Mapped[int] = mapped_column(Integer, nullable=False)
     start_date: Mapped[date] = mapped_column(Date, default=date.today())
-    command_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    command_id: Mapped[int] = mapped_column(Integer, nullable=False, unique=True)
 
     def __repr__(self) -> str:
         return f"""Project (title: {self.title},

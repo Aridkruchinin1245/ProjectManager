@@ -7,8 +7,7 @@ from backend.models.models import Base
 DATABASE_URL = settings.DATABASE_URL
 
 engine = create_engine(
-    url = DATABASE_URL,
-    connect_args={'check_same_thread': False}
+    url = "postgresql://user:password@database:5432/mydb",
 )
 
 SessionLocal = sessionmaker(

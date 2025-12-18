@@ -2,10 +2,14 @@
 services:
   backend:
     build:
-      context: src/
-      dockerfile: backend/Dockerfile
+      context: src/backend
+      dockerfile: Dockerfile
     ports: 
       - 8000:8000
+    depends_on:
+      database:
+        condition: service_healthy
+      
 
   frontend:
     build:
@@ -13,13 +17,23 @@ services:
       dockerfile: Dockerfile
     ports: 
       - 8080:8080
+    depends_on:
+      - backend
 
   database:
     image: postgres:16-alpine
     ports: 
       - 5432:5432
     environment:
+      DATABASE_HOST: database
       POSTGRES_DB: mydb
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
+
+    healthcheck:  
+      test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
