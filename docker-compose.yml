@@ -9,6 +9,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+    volumes: #убрать в итоговой версии
+      - /Users/mikhail_kruchinin/ProjectManager/src/backend:/app/backend
       
 
   frontend:
@@ -19,6 +21,8 @@ services:
       - 8080:8080
     depends_on:
       - backend
+    volumes:
+      - /Users/mikhail_kruchinin/ProjectManager/src/frontend:/app
 
   database:
     image: postgres:16-alpine

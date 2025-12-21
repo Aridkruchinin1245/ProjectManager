@@ -34,8 +34,9 @@
                         </div>
                         <div class="info-item">
                             <span class="info-label">Специальность</span>
-                            <span class="info-value" v-if="profession">{{ profession }}<img src="/change.png" width="15px" height="15px" @click="profession = ''"/></span>
+                            <span class="info-value" v-if="profession">{{ profession }}<img src="/change.png" width="15px" height="15px" @click="profession = ''" v-if="user_id['id'] === id"/></span>
                             <span class="info-value" v-else>
+
                                 <select v-model="add_role_ref" @change="api_service.add_role(auth.getToken(), add_role_ref); router.go(0)">
                                     <option disabled value="">-- Выберите --</option>
                                     <option>CEO (Chief Executive Officer)</option>
@@ -407,6 +408,8 @@
     import { auth } from '@/utils/auth'
     import { api_service } from '@/services/api'
 
+    const id = ref("")
+    const user_id = ref("")
     const name = ref("")
     const email = ref("")
     const phone = ref("")
@@ -435,6 +438,9 @@
         closed_projects.value = response['closed_projects'] ?? '0'
         success_projects.value = response['closed_projects'] ?? '0'
         number_of_members.value = response['number_of_members'] ?? '0'
+        id.value = response['user_id'] ?? 0
+
+        user_id.value = await api_service.get_user_id(auth.getToken())
         
         console.log(response)
     }
@@ -452,4 +458,5 @@
         auth.removeToken()
         router.push('/')
     }
+
 </script>

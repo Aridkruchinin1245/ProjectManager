@@ -1,4 +1,5 @@
-
+from backend.schemas.user_schemas import AddRole
+from backend.crud.users_crud import update_role_email
 from fastapi import APIRouter, Security, HTTPException, status
 from backend.core.security import access_security
 from fastapi_jwt import JwtAuthorizationCredentials
@@ -28,4 +29,16 @@ async def get_all_users(credentials: JwtAuthorizationCredentials = Security(acce
         return all_users()
     else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    
+
+@user_data_router.put('/addRole')
+async def update_role(role: AddRole, credentials: JwtAuthorizationCredentials = Security(access_security)):
+    email = credentials.subject['email']
+    update_role_email(role=role.role, email=email)
         
+
+@user_data_router.get('/getUserId')
+async def get_user_id(credentials: JwtAuthorizationCredentials = Security(access_security)):
+    email = credentials.subject['email']
+    id = get_user_data_by_email(email=email)['user_id']
+    return {'id':id}

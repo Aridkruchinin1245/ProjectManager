@@ -27,7 +27,7 @@
             <div class="filters">
                 <div class="search-box">
                     <i class="fas fa-search search-icon"></i>
-                    <input type="text" placeholder="Поиск пользователей...">
+                    <input type="text" placeholder="Поиск пользователей..." >
                 </div>
                 <select class="filter-select">
                     <option value="all">Все роли</option>

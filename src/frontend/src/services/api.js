@@ -131,5 +131,17 @@ export const api_service = {
       },
     })
     return response
-  }
+  },
+
+  async get_user_id(token) {
+    const response = await API.get('/getUserId', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+    
+  )
+  return response
+}
 };
