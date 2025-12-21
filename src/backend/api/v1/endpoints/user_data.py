@@ -5,7 +5,7 @@ from backend.core.security import access_security
 from fastapi_jwt import JwtAuthorizationCredentials
 from backend.crud.users_crud import all_users, check_user, get_user_data_by_email, get_user_data_by_id
 
-
+#работа с данными пользователей
 user_data_router = APIRouter(tags=['user proccesesсч'])
 
 @user_data_router.get('/get_name')
