@@ -94,7 +94,7 @@
 
             <div class="users-grid">
                 <!-- Пользователь -->
-                <div class="user-card" v-for="user_card in user_data" :key="user_card.user_id" @click="router.push(`/profile/${user_card.user_id}`)">
+                <div class="user-card" v-for="user_card in user_data" :key="user_card.id" @click="router.push(`/profile/${user_card.id}`)">
                     <div class="user-avatar" @click="router.push('/')" style="background-color: #3498db;">ИФ</div>
                     <div class="user-info">
                         <div class="user-name">{{ user_card.first_name }} {{ user_card.last_name }}</div>

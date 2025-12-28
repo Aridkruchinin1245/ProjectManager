@@ -1,8 +1,11 @@
 from sqlalchemy.orm import DeclarativeBase, relationship, Mapped, mapped_column
-from typing import Optional
 from sqlalchemy import String, Integer, Date, ForeignKey, Text, CheckConstraint
 from datetime import date
+from typing import Annotated
  
+intpk = Annotated[int, mapped_column(primary_key=True)]
+date_now = Annotated[date, mapped_column(default=date.today)]
+
 
 class Base(DeclarativeBase): pass
 
@@ -11,21 +14,21 @@ class UserBase(Base):
 
     __tablename__ = "users"
 
-    user_id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
+    id: Mapped[intpk]
     email: Mapped[str] = mapped_column(String(255), unique = True, nullable = False)
     phone: Mapped[str] = mapped_column(String(255), unique = True, nullable = True)
     password_hash: Mapped[str] = mapped_column(String(255), nullable = False)
     password_salt: Mapped[str] = mapped_column(String(255), nullable = False)
     first_name: Mapped[str] = mapped_column(String(50), nullable = False)
     last_name: Mapped[str] = mapped_column(String(50), nullable = False)
-    avatar_url: Mapped[Optional[str]] = mapped_column(nullable = True)
-    role: Mapped[Optional[str]] = mapped_column(nullable = True)
-    created_at: Mapped[date] = mapped_column(Date, default=date.today())
+    avatar_url: Mapped[str| None] = mapped_column(nullable = True)
+    role: Mapped[str | None] = mapped_column(nullable = True)
+    created_at: Mapped[date_now]
 
     projects_lead = relationship("ProjectBase", backref="leader")
-    task_declarator = relationship("TaskBase", backref="declarator")
-    membership = relationship('CommandBase', backref="user")
-    creatorship = relationship("ProjectBase", backref="creator")
+    # task_declarator = relationship("TaskBase", backref="declarator")
+    # membership = relationship('CommandBase', backref="user")
+    # creatorship = relationship("ProjectBase", backref="creator")
 
     def __repr__(self) -> str:
         return f"""User (first_name: {self.first_name},
@@ -56,12 +59,12 @@ class ProjectBase(Base):
         CheckConstraint("status IN ('Не в работе', 'В работе', 'Завершен')", name='valid_status'),
     )
 
-    project_id: Mapped[int] = mapped_column(Integer, autoincrement = True, primary_key = True)
+    id: Mapped[intpk]
     title: Mapped[str] = mapped_column(String(255), unique = True)
-    lead_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"))
+    lead_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     description: Mapped[str] = mapped_column(Text, nullable = False)
     status: Mapped[str] = mapped_column(String(30), default='Не в работе')
-    created_at: Mapped[date] = mapped_column(Date, default=date.today())
+    created_at: Mapped[date_now]
     deadline: Mapped[date] = mapped_column(Date, nullable= False)
     creator_id: Mapped[int] = mapped_column(Integer, nullable=False)
     start_date: Mapped[date] = mapped_column(Date, default=date.today())
@@ -89,11 +92,11 @@ class TaskBase(Base):
 
     __tablename__ = 'tasks'
 
-    task_id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
-    created_at: Mapped[date] = mapped_column(Date, default=date.today)
+    id: Mapped[intpk]
+    created_at: Mapped[date_now]
     description: Mapped[str] = mapped_column(Text, nullable = False)
-    declarant_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"))
-    project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.project_id"))
+    declarant_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id", ondelete="CASCADE"))
 
     def __repr__(self) -> str:
         return f"""Task (
@@ -101,33 +104,33 @@ class TaskBase(Base):
         created_at: {self.created_at},
         description: {self.description},
         declarant_id: {self.declarant_id},
-        project_id: {self.project_id})"""
+        id: {self.id})"""
 
 
 class CommandBase(Base):
 
     __tablename__ = "commands"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
-    project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.project_id"), nullable = False)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"), nullable = False)
-    joined_at: Mapped[date] = mapped_column(Date, default=date.today)
+    id: Mapped[intpk]
+    project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"), nullable = False)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable = False)
+    joined_at: Mapped[date_now]
     role: Mapped[str] = mapped_column(String(30), nullable = False)
-    command_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.command_id"), unique=True)
+    command_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.command_id", ondelete="CASCADE"), unique=True)
 
     def __repr__(self) -> str:
         return f"""Command (
         created_at: {self.joined_at},
-        project_id: {self.project_id},
-        user_id: {self.user_id})"""
+        id: {self.id},
+        id: {self.id})"""
     
 
 class CommandMetricBase(Base):
     
     __tablename__ = "command_metrics"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    command_id: Mapped[int] = mapped_column(Integer, ForeignKey('commands.command_id'), nullable=False,)
+    id: Mapped[intpk]
+    command_id: Mapped[int] = mapped_column(Integer, ForeignKey('commands.id', ondelete="CASCADE"), nullable=False,)
     succeed_project_percent: Mapped[int] = mapped_column(Integer, nullable=False)
     average_time: Mapped[int] = mapped_column(Integer, nullable=True)
     total_time: Mapped[int] = mapped_column(Integer, nullable=True)
@@ -147,9 +150,9 @@ class UserMetricBase(Base):
     
     __tablename__ = "user_metrics"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.user_id'), nullable=False, unique=True)
-    command_id: Mapped[int] = mapped_column(Integer, ForeignKey('commands.command_id'), nullable=False,)
+    id: Mapped[intpk]
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable=False, unique=True)
+    command_id: Mapped[int] = mapped_column(Integer, ForeignKey('commands.id'), nullable=False,)
     succeed_project_percent: Mapped[int] = mapped_column(Integer, nullable=False)
     average_time: Mapped[int] = mapped_column(Integer, nullable=True)
     total_time: Mapped[int] = mapped_column(Integer, nullable=True)

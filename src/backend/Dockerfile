@@ -11,7 +11,5 @@ COPY . .
 
 WORKDIR /app
 
-RUN python -m backend.main
-
 CMD [ "python", "-m", "uvicorn", "backend.main:app", "--reload", "--host", "0.0.0.0" ]
 

@@ -9,7 +9,7 @@
             <router-link class="text-link" to="/users">Пользователи</router-link>
             <div class="profile">
                 <div class="avatar">PM</div>
-                <router-link class="text-link" :to="`/profile/${user_id}`">{{ name }}</router-link>
+                <router-link class="text-link" :to="`/profile/${id}`">{{ name }}</router-link>
             </div>
             
         </header>
@@ -232,7 +232,7 @@
     const router = useRouter()
     
     const name = ref("")
-    const user_id = ref("")
+    const id = ref("")
     const projects_ref = ref()
 
     const project_title = ref("")
@@ -250,7 +250,7 @@
         try {
         const response = await api_service.get_name(auth.getToken())
         name.value = response['first_name'] + " " + response['last_name'] ?? "Не указано"
-        user_id.value = response['user_id']
+        id.value = response['id']
         }
         catch (error) {
             if (error.status == '401') {

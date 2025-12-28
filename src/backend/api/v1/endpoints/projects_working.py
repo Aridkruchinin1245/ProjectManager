@@ -4,7 +4,7 @@ from backend.core.security import access_security
 from backend.schemas.project_schemas import ProjectSchema
 from backend.crud.projects_crud import create_project, get_projects
 from datetime import datetime
-from backend.crud.users_crud import check_user
+from backend.crud.users_crud import approve_user
 
 project_router = APIRouter(tags=['project processes'])
 
@@ -13,7 +13,7 @@ async def creating_project(user_data: ProjectSchema, credentials: JwtAuthorizati
     try:
         credentials_data = credentials.subject
 
-        create_project(title=user_data.title,
+        await create_project(title=user_data.title,
                        description=user_data.description,
                        deadline=datetime.strptime(user_data.deadline, '%Y-%m-%d').date(),
                        email=credentials_data['email']
@@ -27,8 +27,8 @@ async def send_projects(credentials: JwtAuthorizationCredentials = Security(acce
     try:
         data = credentials.subject
 
-        if check_user(email=data['email'], password=data['password']):
-            return get_projects()
+        if await approve_user(email=data['email'], password=data['password']):
+            return await get_projects()
         else:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Такого пользователя не существует')
         

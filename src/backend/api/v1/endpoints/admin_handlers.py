@@ -15,6 +15,7 @@ def delete_project_handler(credentials: JwtAuthorizationCredentials = Security(a
             delete_projects()
         else:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Пользователь не является админом')
+        
     except HTTPException:
         raise
 
@@ -27,6 +28,7 @@ def delete_project_handler(credentials: JwtAuthorizationCredentials = Security(a
             delete_users()
         else:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Пользователь не является админом')
+        
     except HTTPException:
         raise
 

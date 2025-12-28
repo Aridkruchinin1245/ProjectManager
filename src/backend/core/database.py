@@ -1,33 +1,22 @@
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from backend.core.config import settings
 from backend.models.models import Base
+from backend.core.config import settings
 # from backend.services.logger import logger
 
-DATABASE_URL = settings.DATABASE_URL
-
-engine = create_engine(
-    url = "postgresql://user:password@database:5432/mydb",
+async_engine = create_async_engine(
+    url = settings.async_db_url,
+    echo = True #ток на время разработки
 )
 
-SessionLocal = sessionmaker(
-    bind=engine,
+AsyncSessionFactory = async_sessionmaker(
+    bind=async_engine,
     autoflush=False,
-    autocommit=False
+    autocommit=False,
+    class_=AsyncSession
 )
 
 def create_tables():
-    try:
-        Base.metadata.create_all(bind=engine)
-        # logger.info('таблицы созданы')
-    except Exception as e:
-        # logger.error(f'Ошибка создания бд {e}')
-        pass
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    sync_url = settings.sync_db_url
+    sync_engine = create_engine(sync_url)
+    Base.metadata.create_all(bind=sync_engine)

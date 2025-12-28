@@ -1,57 +1,59 @@
-from typing import Literal
 
-role_list = Literal[
-    "CEO (Chief Executive Officer)",
-    "CTO (Chief Technology Officer)",
-    "CIO (Chief Information Officer)",
-    "Head of Development",
-    "Head of Product",
-    "Product Owner",
-    "Product Manager",
-    "Project Manager",
-    "Program Manager",
-    "Scrum Master",
-    "Business Analyst",
-    "Systems Analyst",
-    "Product Analyst",
-    "Data Analyst",
-    "BI Analyst",
-    "Software Architect",
-    "Solution Architect",
-    "Data Architect",
-    "Tech Lead",
-    "Team Lead",
-    "Engineering Manager",
-    "Backend Developer",
-    "Frontend Developer",
-    "Full Stack Developer",
-    "Java Developer",
-    "Python Developer",
-    "C# / .NET Developer",
-    "Go Developer",
-    "PHP Developer",
-    "Node.js Developer",
-    "iOS Developer",
-    "Android Developer",
-    "React Developer",
-    "Vue.js Developer",
-    "Data Scientist",
-    "Data Engineer",
-    "ML Engineer",
-    "QA Engineer (Manual)",
-    "QA Automation Engineer",
-    "DevOps Engineer",
-    "System Administrator",
-    "SRE (Site Reliability Engineer)",
-    "Security Engineer",
-    "Cloud Engineer",
-    "UX/UI Designer",
-    "Product Designer",
-    "UX Researcher",
-    "Technical Writer",
-    "SEO Specialist",
-    "Delivery Manager",
-    "Customer Success Manager",
-    "Tech Support Engineer",
-    "IT Specialist"
-]
+from enum import Enum
+
+
+
+class RoleList(Enum):
+    CEO = "CEO (Chief Executive Officer)"
+    CTO = "CTO (Chief Technology Officer)"
+    CIO = "CIO (Chief Information Officer)"
+    HEAD_OF_DEVELOPMENT = "Head of Development"
+    HEAD_OF_PRODUCT = "Head of Product"
+    PRODUCT_OWNER = "Product Owner"
+    PRODUCT_MANAGER = "Product Manager"
+    PROJECT_MANAGER = "Project Manager"
+    PROGRAM_MANAGER = "Program Manager"
+    SCRUM_MASTER = "Scrum Master"
+    BUSINESS_ANALYST = "Business Analyst"
+    SYSTEMS_ANALYST = "Systems Analyst"
+    PRODUCT_ANALYST = "Product Analyst"
+    DATA_ANALYST = "Data Analyst"
+    BI_ANALYST = "BI Analyst"
+    SOFTWARE_ARCHITECT = "Software Architect"
+    SOLUTION_ARCHITECT = "Solution Architect"
+    DATA_ARCHITECT = "Data Architect"
+    TECH_LEAD = "Tech Lead"
+    TEAM_LEAD = "Team Lead"
+    ENGINEERING_MANAGER = "Engineering Manager"
+    BACKEND_DEVELOPER = "Backend Developer"
+    FRONTEND_DEVELOPER = "Frontend Developer"
+    FULL_STACK_DEVELOPER = "Full Stack Developer"
+    JAVA_DEVELOPER = "Java Developer"
+    PYTHON_DEVELOPER = "Python Developer"
+    CSHARP_DEVELOPER = "C# / .NET Developer"
+    GO_DEVELOPER = "Go Developer"
+    PHP_DEVELOPER = "PHP Developer"
+    NODEJS_DEVELOPER = "Node.js Developer"
+    IOS_DEVELOPER = "iOS Developer"
+    ANDROID_DEVELOPER = "Android Developer"
+    REACT_DEVELOPER = "React Developer"
+    VUEJS_DEVELOPER = "Vue.js Developer"
+    DATA_SCIENTIST = "Data Scientist"
+    DATA_ENGINEER = "Data Engineer"
+    ML_ENGINEER = "ML Engineer"
+    QA_ENGINEER_MANUAL = "QA Engineer (Manual)"
+    QA_AUTOMATION_ENGINEER = "QA Automation Engineer"
+    DEVOPS_ENGINEER = "DevOps Engineer"
+    SYSTEM_ADMINISTRATOR = "System Administrator"
+    SRE = "SRE (Site Reliability Engineer)"
+    SECURITY_ENGINEER = "Security Engineer"
+    CLOUD_ENGINEER = "Cloud Engineer"
+    UX_UI_DESIGNER = "UX/UI Designer"
+    PRODUCT_DESIGNER = "Product Designer"
+    UX_RESEARCHER = "UX Researcher"
+    TECHNICAL_WRITER = "Technical Writer"
+    SEO_SPECIALIST = "SEO Specialist"
+    DELIVERY_MANAGER = "Delivery Manager"
+    CUSTOMER_SUCCESS_MANAGER = "Customer Success Manager"
+    TECH_SUPPORT_ENGINEER = "Tech Support Engineer"
+    IT_SPECIALIST = "IT Specialist"

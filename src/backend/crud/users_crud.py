@@ -1,13 +1,25 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from backend.core.security import compare_passwords
 from backend.models.models import UserBase
-from backend.core.database import SessionLocal
+from backend.core.database import AsyncSessionFactory
+from sqlalchemy import delete, select
 
+async def check_user_by_email(email: str) -> bool:
 
-def create_user(email: str, first_name: str, last_name: str, password_hash: str, password_salt: str):
-    with SessionLocal() as session:
-        check = session.query(UserBase).filter(UserBase.email == email).first()
-        if check == None:
+    async with AsyncSessionFactory() as session:
+        stmt = select(UserBase).where(UserBase.email == email)
+        data = await session.execute(stmt)
+        result = bool(data.scalar())
+
+    return result
+
+async def create_user(email: str, first_name: str, last_name: str,
+                      password_hash: str, password_salt: str) -> None:
+    
+    async with AsyncSessionFactory() as session:
+        user = await check_user_by_email(email=email)
+
+        if not user:
             session.add(UserBase(
                 email = email,
                 first_name=first_name,
@@ -15,82 +27,103 @@ def create_user(email: str, first_name: str, last_name: str, password_hash: str,
                 password_hash = password_hash,
                 password_salt = password_salt
             ))
-            session.commit()
+            await session.commit()
 
 
-def check_user(email, password):
-    with SessionLocal() as session:
-        user = session.query(UserBase).filter(UserBase.email == email).first()
+async def approve_user(email: str, password: str) -> bool:
+   async with AsyncSessionFactory() as session:
+        
+        stmt = select(UserBase).where(UserBase.email == email)
+        data = await session.execute(stmt)
+        user = data.scalar_one_or_none()
+
         if user:
             check = compare_passwords(user.password_hash, user.password_salt, password)
-            session.commit()
+            await session.commit()
         else:
             return False
+        
         return check
     
 
-def get_user_data_by_email(email : str):
-    with SessionLocal() as session:
+async def get_user_data_by_email(email : str):
+    async with AsyncSessionFactory() as session:
         try:
-            user = session.query(UserBase).filter(UserBase.email == email).first()
-            session.commit()
-            data = {
-                'user_id':user.user_id,
-                'first_name':user.first_name,
-                'last_name':user.last_name,
-                'email':user.email,
-                'role':user.role,
-                'avatar_url':user.avatar_url,
-                'created_at':user.created_at,
-                'projects_lead':user.projects_lead,
-                'phone':user.phone,
-            }
+            stmt = select(UserBase).where(UserBase.email == email)
+            user = await session.execute(stmt)
+            user = user.scalar_one_or_none()
+
+            if user:
+                data = {
+                    'id':user.id,
+                    'first_name':user.first_name,
+                    'last_name':user.last_name,
+                    'email':user.email,
+                    'role':user.role,
+                    'avatar_url':user.avatar_url,
+                    'created_at':user.created_at,
+                    # 'projects_lead':user.projects_lead,
+                    'phone':user.phone,
+                    }
         
             return data
         
-        except:
-            return HTTPException(status_code=404, detail='Юзер не обнаружен')
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Юзер не обнаружен {e}')
         
 
-def delete_users():
-    with SessionLocal() as session:
-        session.query(UserBase).delete()
-        session.commit()
+async def delete_users():
+    async with AsyncSessionFactory() as session:
+        stmt = delete(UserBase)
+        await session.execute(stmt)
+        await session.commit()
 
 
-def get_user_data_by_id(id : int):
-    with SessionLocal() as session:
+async def get_user_data_by_id(id : int):
+    async with AsyncSessionFactory() as session:
         try:
-            user = session.query(UserBase).filter(UserBase.user_id == id).first()
-            session.commit()
+            stmt = select(UserBase).where(UserBase.id == id)
+            user = await session.execute(stmt)
+            user = user.scalar_one_or_none()
+            await session.commit()
+
             data = {
-                'user_id':user.user_id,
-                'first_name':user.first_name,
-                'last_name':user.last_name,
-                'email':user.email,
-                'role':user.role,
-                'avatar_url':user.avatar_url,
-                'created_at':user.created_at,
-                'projects_lead':user.projects_lead,
-                'phone':user.phone,
-            }
-        
+                    'id':user.id,
+                    'first_name':user.first_name,
+                    'last_name':user.last_name,
+                    'email':user.email,
+                    'role':user.role,
+                    'avatar_url':user.avatar_url,
+                    'created_at':user.created_at,
+                    # 'projects_lead':user.projects_lead,
+                    'phone':user.phone,
+                }
+            
             return data
         
         except:
-            return HTTPException(status_code=404, detail='Юзер не обнаружен')
+            return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Юзер не обнаружен {user} k')
 
 
-def all_users():
-    with SessionLocal() as session:
-        users = [user.to_dict() for user in session.query(UserBase).all()]
-        session.commit()
+async def all_users():
+    async with AsyncSessionFactory() as session:
+        stmt = select(UserBase)
+        data = await session.execute(stmt)
+        data = data.scalars().all()
+
+        users = [user.to_dict() for user in data]
+        await session.commit()
     
     return users
 
 
-def update_role_email(role: str, email: str):
-    with SessionLocal() as session:
-        user = session.query(UserBase).filter(UserBase.email == email).first()
-        user.role = role
-        session.commit()
+async def update_role_email(role: str, email: str):
+    async with AsyncSessionFactory() as session:
+        stmt = select(UserBase).where(UserBase.email == email)
+        user = await session.execute(stmt)
+        user = user.scalar_one_or_none()
+        if user:
+            user.role = role
+            await session.commit()
+        else:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)

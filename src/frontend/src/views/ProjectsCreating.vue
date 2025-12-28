@@ -2,7 +2,7 @@
   <body>
     <div class="create-project-form">
       <router-link class="back-btn" to="/list">← Назад к проектам</router-link>
-      <router-link class="back-btn" :to="`/profile/${user_id}`">{{name }}</router-link>
+      <router-link class="back-btn" :to="`/profile/${id}`">{{name }}</router-link>
     </div>
 
     <div class="create-project-form">
@@ -210,7 +210,7 @@ import { api_service } from "@/services/api";
 const router = useRouter();
 
 const name = ref("");
-const user_id = ref("");
+const id = ref("");
 const team_id = ref("");
 const title = ref("");
 const description = ref("");
@@ -221,7 +221,7 @@ const getName = async () => {
   const response = await api_service.get_name(auth.getToken());
   name.value =
     response["first_name"] + " " + response["last_name"] ?? "Не указано";
-  user_id.value = response["user_id"];
+  id.value = response["id"];
 };
 
 onBeforeMount(() => {
