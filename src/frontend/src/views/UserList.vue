@@ -11,17 +11,30 @@
             <div class="page-header">
                 <div class="page-title">
                     <h1>Список пользователей</h1>
-                    <div class="subtitle">Все участники проекта</div>
+                    <div class="subtitle" v-if="commandCreating">Выбранные пользователи: <span v-for="addedUser in usernames" :key="addedUser">{{addedUser}}, </span></div>
                 </div>
-                <router-link to="/list" class="back-btn">
+
+                <button class="back-btn" @click="router.push('/list')">
                     <i class="fas fa-arrow-left"></i>
                     Назад к проектам
-                </router-link>
+                </button>
 
-                <router-link to="/list" class="back-btn">
+                <button @click="commandCreating = !commandCreating" class="back-btn">
                     <i class="fas"></i>
                     Создать команду
-                </router-link>
+                </button>
+
+                <div v-if="commandCreating" style="padding-left: 40px;">
+                    <button @click="clearData" class="back-btn">
+                        <i class="fas"></i>
+                        Очистить все
+                    </button>
+
+                    <button @click="sendDataAboutCommand()" class="back-btn">
+                        <i class="fas"></i>
+                        Подтвердить
+                    </button>
+                </div>
             </div>
 
             <div class="filters">
@@ -94,11 +107,11 @@
 
             <div class="users-grid">
                 <!-- Пользователь -->
-                <div class="user-card" v-for="user_card in user_data" :key="user_card.id" @click="router.push(`/profile/${user_card.id}`)">
+                <div class="user-card" v-for="user_card in user_data" :key="user_card.id" @click="addUserToList(user_card.id, `${user_card.first_name} ${user_card.last_name }`)">
                     <div class="user-avatar" @click="router.push('/')" style="background-color: #3498db;">ИФ</div>
                     <div class="user-info">
-                        <div class="user-name">{{ user_card.first_name }} {{ user_card.last_name }}</div>
-                        <div class="user-role">Project Manager</div>
+                        <div class="user-name"  @click="router.push(`/profile/${user_card.id}`)">{{ user_card.first_name }} {{ user_card.last_name }} <span class="user-stat-number" v-if="addedUsers.includes(user_card.id)">*</span></div>
+                        <div class="user-role">{{ user_card.role }}</div>
                         <div class="user-meta">
                             <div class="user-meta-item">
                                 <i class="fas fa-envelope"></i>
@@ -423,8 +436,10 @@
     import { api_service } from '@/services/api';
 
     const router = useRouter()
-
+    const commandCreating = ref(false)
     const user_data = ref([])
+    const addedUsers = ref([])
+    const usernames = ref([])
 
     const get_data = async() => {
         try {
@@ -439,6 +454,41 @@
                 alert(error)
             }
         }
+    }
+
+    const addUserToList = (id, name) => {
+        if (commandCreating.value) {
+            if (!addedUsers.value.includes(id)) {
+                addedUsers.value.push(id)
+            }
+            
+            else {
+                const currentIdId = addedUsers.value.indexOf(id)
+                addedUsers.value.splice(currentIdId, 1)
+            }
+
+            if (!usernames.value.includes(name)) {
+                usernames.value.push(name)
+            }
+            else {
+                const currentUserName = usernames.value.indexOf(name)
+                usernames.value.splice(currentUserName, 1)
+            }
+        }
+    }
+ 
+    const clearData = () => {
+        usernames.value = addedUsers.value = []
+    }
+
+    const sendDataAboutCommand = async() => {
+        const response = await api_service.sendCommandIds(addedUsers.value, auth.getToken())
+        alert(response)
+    }
+
+    const getId = async() => {
+        const id = await api_service.get_user_id(auth.getToken())
+        return id
     }
 
     onBeforeMount(() => {

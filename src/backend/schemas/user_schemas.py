@@ -17,3 +17,8 @@ class User(BaseModel):
 
 class AddRole(BaseModel):
     role: RoleList = Field(...)
+
+
+class ChangeNameData(BaseModel):
+    first_name: str
+    last_name: str

@@ -2,7 +2,9 @@ from fastapi import HTTPException, status
 from backend.core.security import compare_passwords
 from backend.models.models import UserBase
 from backend.core.database import AsyncSessionFactory
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, update
+
+from backend.schemas.role_enum import RoleList
 
 async def check_user_by_email(email: str) -> bool:
 
@@ -85,8 +87,6 @@ async def get_user_data_by_id(id : int):
             stmt = select(UserBase).where(UserBase.id == id)
             user = await session.execute(stmt)
             user = user.scalar_one_or_none()
-            await session.commit()
-
             data = {
                     'id':user.id,
                     'first_name':user.first_name,
@@ -117,13 +117,19 @@ async def all_users():
     return users
 
 
-async def update_role_email(role: str, email: str):
+async def update_role_email(role: RoleList, email: str):
     async with AsyncSessionFactory() as session:
-        stmt = select(UserBase).where(UserBase.email == email)
-        user = await session.execute(stmt)
-        user = user.scalar_one_or_none()
-        if user:
-            user.role = role
+        try:
+            stmt = update(UserBase).filter(UserBase.email == email).values(role = role.role.value)
+            await session.execute(stmt)
             await session.commit()
-        else:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            raise e
+
+
+async def change_user_name(email: str, first_name: str, last_name: str):
+    async with AsyncSessionFactory() as session:
+        stmt = update(UserBase).filter(UserBase.email == email).values(first_name = first_name, last_name=last_name)
+        await session.execute(stmt)
+        await session.commit()
+    

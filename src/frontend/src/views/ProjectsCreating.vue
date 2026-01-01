@@ -45,8 +45,8 @@
           >
             <option disabled value="">-- пока не доступно --</option>
             <!-- <option>Создать новую команду...</option> -->
-            <option v-for="team in teams" :key="team.id" :value="team.id">
-              {{ team.name }}
+            <option v-for="team in commands" :key="team.id" :value="team.id">
+              {{ team.id }}
             </option>
           </select>
           <button class="btn-submit">Узнать о команде</button>
@@ -216,6 +216,8 @@ const title = ref("");
 const description = ref("");
 const deadline = ref("");
 const start_date = ref("");
+const selectedTeam = ref("");
+const commands = ref([])
 
 const getName = async () => {
   const response = await api_service.get_name(auth.getToken());
@@ -224,11 +226,17 @@ const getName = async () => {
   id.value = response["id"];
 };
 
+const getCommands = async() => {
+  const response = await api_service.getCommands(auth.getToken())
+  commands.value = response
+}
+
 onBeforeMount(() => {
   if (!auth.getToken()) {
     router.push("/registration");
   } else {
     getName();
+    getCommands()
   }
 });
 
@@ -242,7 +250,7 @@ const sendData = async () => {
       auth.getToken(),
       title.value,
       description.value,
-      1111,
+      selectedTeam.value,
       deadline.value
     );
     title.value = deadline.value = team_id.value = description.value = "";

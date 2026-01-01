@@ -5,7 +5,8 @@
         <router-link class="back-btn" to="/list">← Назад к проектам</router-link>
         <span @click="deleteToken" class="back-btn">Выйти</span>
         <span class="back-btn">Изменить фото профиля</span>
-        <input type="file"/>
+        <span class="back-btn" @click="showPrompt()" v-if="id === user_id.id">Изменить имя</span>
+        <!-- <input type="file"/> -->
         <div class="profile-header">
             <div class="avatar">ИФ</div>
             <div class="profile-info">
@@ -34,7 +35,8 @@
                         </div>
                         <div class="info-item">
                             <span class="info-label">Специальность</span>
-                            <span class="info-value" v-if="profession">{{ profession }}<img src="/change.png" width="15px" height="15px" @click="profession = ''" v-if="id['id'] === id"/></span>
+
+                            <span class="info-value" v-if="profession">{{ profession }}<img src="/change.png" width="15px" height="15px" @click="profession = ''" v-if="id === user_id.id"/></span>
                             <span class="info-value" v-else>
 
                                 <select v-model="add_role_ref" @change="api_service.add_role(auth.getToken(), add_role_ref); router.go(0)">
@@ -409,7 +411,7 @@
     import { api_service } from '@/services/api'
 
     const id = ref("")
-    const id = ref("")
+    const user_id = ref("")
     const name = ref("")
     const email = ref("")
     const phone = ref("")
@@ -440,7 +442,7 @@
         number_of_members.value = response['number_of_members'] ?? '0'
         id.value = response['id'] ?? 0
 
-        id.value = await api_service.get_user_id(auth.getToken())
+        user_id.value = await api_service.get_user_id(auth.getToken())
         
         console.log(response)
     }
@@ -457,6 +459,13 @@
     const deleteToken = () => {
         auth.removeToken()
         router.push('/')
+    }
+
+    const showPrompt = async() => {
+        const new_first_name = window.prompt('Новое имя:')
+        const new_last_name = window.prompt('Новая фамилия:')
+        await api_service.changeName(auth.getToken(), new_first_name, new_last_name)
+        router.go(0)
     }
 
 </script>

@@ -1,7 +1,9 @@
 from sqlalchemy.orm import DeclarativeBase, relationship, Mapped, mapped_column
-from sqlalchemy import String, Integer, Date, ForeignKey, Text, CheckConstraint
+from sqlalchemy import Enum, String, Integer, Date, ForeignKey, Text, CheckConstraint
 from datetime import date
 from typing import Annotated
+
+from backend.schemas.role_enum import RoleList
  
 intpk = Annotated[int, mapped_column(primary_key=True)]
 date_now = Annotated[date, mapped_column(default=date.today)]
@@ -23,6 +25,7 @@ class UserBase(Base):
     last_name: Mapped[str] = mapped_column(String(50), nullable = False)
     avatar_url: Mapped[str| None] = mapped_column(nullable = True)
     role: Mapped[str | None] = mapped_column(nullable = True)
+    # role: Mapped[str | None] = mapped_column(nullable = True)
     created_at: Mapped[date_now]
 
     projects_lead = relationship("ProjectBase", backref="leader")
@@ -88,6 +91,14 @@ class ProjectBase(Base):
         return data
 
 
+class ProjectMembers(Base):
+    __tablename__ = "projectMember"
+
+    id: Mapped[intpk]
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+
+
 class TaskBase(Base):
 
     __tablename__ = 'tasks'
@@ -112,18 +123,21 @@ class CommandBase(Base):
     __tablename__ = "commands"
 
     id: Mapped[intpk]
-    project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"), nullable = False)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable = False)
-    joined_at: Mapped[date_now]
-    role: Mapped[str] = mapped_column(String(30), nullable = False)
-    command_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.command_id", ondelete="CASCADE"), unique=True)
-
-    def __repr__(self) -> str:
-        return f"""Command (
-        created_at: {self.joined_at},
-        id: {self.id},
-        id: {self.id})"""
+    creator_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     
+
+
+class CommandMembers(Base):
+    __tablename__ = 'commandMembers'
+
+    id: Mapped[intpk]
+    project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"), nullable = True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable = False)
+    role: Mapped[str] = mapped_column(String(30), nullable = True)
+    joined_at: Mapped[date_now]
+    command_id: Mapped[int] = mapped_column(ForeignKey("commands.id"))
+
+
 
 class CommandMetricBase(Base):
     

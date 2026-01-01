@@ -16,7 +16,8 @@ async def creating_project(user_data: ProjectSchema, credentials: JwtAuthorizati
         await create_project(title=user_data.title,
                        description=user_data.description,
                        deadline=datetime.strptime(user_data.deadline, '%Y-%m-%d').date(),
-                       email=credentials_data['email']
+                       email=credentials_data['email'],
+                       command_id=user_data.command_id
                         )
                        
     except Exception as e: 

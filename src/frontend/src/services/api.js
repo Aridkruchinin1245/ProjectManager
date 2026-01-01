@@ -143,5 +143,36 @@ export const api_service = {
     
   )
   return response
+},
+
+async getCommands(token) {
+  const response = await API.get('/getCommands', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+)
+  return response
+},
+
+async changeName(token, first_name, last_name) {
+  await API.post('/changeName', {'first_name':first_name, 'last_name':last_name}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+)
+},
+
+async sendCommandIds(data, token) {
+  await API.post('/commandId', {"data":data}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+)
 }
 };
