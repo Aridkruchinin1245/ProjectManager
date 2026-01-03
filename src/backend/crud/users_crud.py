@@ -1,8 +1,8 @@
 from fastapi import HTTPException, status
 from backend.core.security import compare_passwords
-from backend.models.models import UserBase
+from backend.models.models import CommandMembers, UserBase
 from backend.core.database import AsyncSessionFactory
-from sqlalchemy import delete, select, update
+from sqlalchemy import and_, delete, select, update
 
 from backend.schemas.role_enum import RoleList
 
@@ -105,18 +105,6 @@ async def get_user_data_by_id(id : int):
             return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Юзер не обнаружен {user} k')
 
 
-async def all_users():
-    async with AsyncSessionFactory() as session:
-        stmt = select(UserBase)
-        data = await session.execute(stmt)
-        data = data.scalars().all()
-
-        users = [user.to_dict() for user in data]
-        await session.commit()
-    
-    return users
-
-
 async def update_role_email(role: RoleList, email: str):
     async with AsyncSessionFactory() as session:
         try:
@@ -133,3 +121,29 @@ async def change_user_name(email: str, first_name: str, last_name: str):
         await session.execute(stmt)
         await session.commit()
     
+
+async def count_participating_in_projects_by_id(id: int) -> int:
+    async with AsyncSessionFactory() as session:
+        stmt = select(CommandMembers).where(and_(CommandMembers.user_id == id, CommandMembers.project_id != None))
+        data = await session.execute(stmt)
+        number = len(data.scalars().all())
+        return number
+    
+
+async def all_users():
+    async with AsyncSessionFactory() as session:
+        stmt = select(UserBase)
+        data = await session.execute(stmt)
+        data = data.scalars().all()
+
+        users = [user.to_dict() for user in data]
+        await session.commit()
+
+    updated_users = [] 
+
+    for user in users:
+        user['project_participating'] = await count_participating_in_projects_by_id(user['id'])
+        updated_users.append(user)
+
+    
+    return updated_users

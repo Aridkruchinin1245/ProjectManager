@@ -1,5 +1,5 @@
 from backend.schemas.user_schemas import AddRole, ChangeNameData
-from backend.crud.users_crud import change_user_name, update_role_email
+from backend.crud.users_crud import change_user_name, count_participating_in_projects_by_id, update_role_email
 from fastapi import APIRouter, Security, HTTPException, status
 from backend.core.security import access_security
 from fastapi_jwt import JwtAuthorizationCredentials
@@ -55,3 +55,9 @@ async def change_name(data: ChangeNameData,
         await change_user_name(credentials.subject['email'], data.first_name, data.last_name)
     except:
         raise
+
+
+@user_data_router.get('/projectParticipating/{id}')
+async def get_number_of_projects(id:int, credentials: JwtAuthorizationCredentials = Security(access_security)):
+    number = await count_participating_in_projects_by_id(id)
+    return {'data':number}

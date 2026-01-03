@@ -11,7 +11,7 @@
             <div class="page-header">
                 <div class="page-title">
                     <h1>Список пользователей</h1>
-                    <div class="subtitle" v-if="commandCreating">Выбранные пользователи: <span v-for="addedUser in usernames" :key="addedUser">{{addedUser}}, </span></div>
+                    <div class="subtitle" v-if="commandCreating">Выбранные пользователи: <span v-for="name in usernames" :key="name">{{ name }}, </span></div>
                 </div>
 
                 <button class="back-btn" @click="router.push('/list')">
@@ -30,7 +30,7 @@
                         Очистить все
                     </button>
 
-                    <button @click="sendDataAboutCommand()" class="back-btn">
+                    <button @click="sendDataAboutCommand()" class="back-btn" v-if="addedUsers!=[]">
                         <i class="fas"></i>
                         Подтвердить
                     </button>
@@ -124,7 +124,7 @@
                         </div>
                         <div class="user-stats">
                             <div class="user-stat">
-                                <div class="user-stat-number">В разработке</div>
+                                <div class="user-stat-number">{{ user_card.project_participating }}</div>
                                 <div class="user-stat-label">Проектов</div>
                             </div>
                             <div class="user-stat">
@@ -470,6 +470,7 @@
             if (!usernames.value.includes(name)) {
                 usernames.value.push(name)
             }
+
             else {
                 const currentUserName = usernames.value.indexOf(name)
                 usernames.value.splice(currentUserName, 1)
@@ -482,14 +483,10 @@
     }
 
     const sendDataAboutCommand = async() => {
-        const response = await api_service.sendCommandIds(addedUsers.value, auth.getToken())
-        alert(response)
-    }
-
-    const getId = async() => {
-        const id = await api_service.get_user_id(auth.getToken())
-        return id
-    }
+        await api_service.sendCommandIds(addedUsers.value, auth.getToken())
+        clearData()
+        commandCreating.value = !commandCreating.value
+    } 
 
     onBeforeMount(() => {
     if (auth.getToken() == 'undefined') {

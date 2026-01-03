@@ -6,4 +6,5 @@ class ProjectSchema(BaseModel):
     command_id: int = Field(..., ge=0, description='айди команды')
     deadline: str = Field(..., description='дедлайн проекта')
 
-    
+class ID(BaseModel):
+    id: int

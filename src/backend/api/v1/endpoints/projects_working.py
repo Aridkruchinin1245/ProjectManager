@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Security, status
 from fastapi_jwt import JwtAuthorizationCredentials
 from backend.core.security import access_security
-from backend.schemas.project_schemas import ProjectSchema
-from backend.crud.projects_crud import create_project, get_projects
+from backend.schemas.project_schemas import ID, ProjectSchema
+from backend.crud.projects_crud import create_project, get_project_data_by_id, get_projects
 from datetime import datetime
 from backend.crud.users_crud import approve_user
 
@@ -23,6 +23,8 @@ async def creating_project(user_data: ProjectSchema, credentials: JwtAuthorizati
     except Exception as e: 
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f'Ошибка создания проекта {e}')
     
+
+
 @project_router.get('/getProjects')
 async def send_projects(credentials: JwtAuthorizationCredentials = Security(access_security)):
     try:
@@ -35,3 +37,11 @@ async def send_projects(credentials: JwtAuthorizationCredentials = Security(acce
         
     except HTTPException:
         raise
+
+
+
+@project_router.post('/getProjectNameId')
+async def get_project_id(id: ID, credentials: JwtAuthorizationCredentials = Security(access_security)):
+    data = await get_project_data_by_id(id.id)
+    title = data.title
+    return {'data':title}

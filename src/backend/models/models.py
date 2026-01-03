@@ -111,7 +111,7 @@ class TaskBase(Base):
 
     def __repr__(self) -> str:
         return f"""Task (
-        task_id: {self.task_id},
+        task_id: {self.id},
         created_at: {self.created_at},
         description: {self.description},
         declarant_id: {self.declarant_id},

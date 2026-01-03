@@ -174,5 +174,44 @@ async sendCommandIds(data, token) {
       },
     }
 )
+},
+
+async getProjectName(id, token) {
+  const response = await API.post('/getProjectNameId', {'id':id}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    return response
+},
+
+async getParticipating(id, token) {
+  const response = await API.get(`/projectParticipating/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    return response
+},
+
+async createNewTask(project_id, description, token) {
+  await API.post('/createTask', {'description':description, 'project_id':project_id}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+},
+
+async getTasks(project_id, token) {
+  const response = await API.get(`allTasks/${project_id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    return response
 }
 };

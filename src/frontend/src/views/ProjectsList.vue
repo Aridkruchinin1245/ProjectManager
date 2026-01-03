@@ -34,6 +34,10 @@
 
                 <div class="welcome-message" v-else>
                     <div class="block-main">
+                        <router-link :to="`/commandCreating/${project_id}`" class="text-link">Добавить задачу +</router-link>
+                    </div>
+
+                    <div class="block-main">
                         <h2>{{ project_title }}</h2>
                         <div>Статус: {{ project_status }} </div>  
                         <div>Лидер: 
@@ -51,6 +55,12 @@
                         <li>Создан: {{project_created_at}}</li>
                         <li>Запланированное начало: {{ project_start_date }}</li>
                         <li>Дедлайн: {{ project_deadline }}</li>
+                    </div>
+
+                    <div class="block-dates">
+                        <div v-for="task in project_tasks" :key="task.id">
+                            <div style="padding-bottom: 15px;">Задача от <router-link class="text-link" :to="`profile/${task.declarant_id}`">{{ task.declarant_name }}</router-link> созданная в {{ task.created_at }}: <li>{{ task.description }}</li></div>
+                        </div>
                     </div>
 
                     <div class="block-status">
@@ -236,6 +246,8 @@
     const projects_ref = ref()
 
     const project_title = ref("")
+    const project_tasks = ref("")
+    const project_id = ref()
     const project_description = ref("")
     const project_status = ref("")
     const project_leader_id = ref("")
@@ -279,6 +291,7 @@
 
     const getInformation = (project) => {
         project_title.value = project.title ?? 'Не указано'
+        project_id.value = project.id ?? 0
         project_status.value = project.status ?? 'Не указано'
         project_created_at.value = project.created_at ?? 'Не указано'
         project_start_date.value = project.start_date ?? 'Не указано'
@@ -288,5 +301,12 @@
         project_leader_id.value = project.lead_id ?? 'Не указано'
         project_creator_name.value = project.creator_name ?? 'Не указано'
         project_leader_name.value = project.leader_name ?? 'Не указано'
+        project_tasks.value = project.tasks ?? 'Нет задач'
+
+    }
+
+    const getTasks = async(project_id) => {
+        const tasks = await api_service.getTasks(project_id, auth.getToken())
+        return tasks
     }
 </script>

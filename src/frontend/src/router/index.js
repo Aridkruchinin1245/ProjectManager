@@ -44,9 +44,15 @@ const routes = [
   },
 
   {
+    path: '/commandCreating/:id',
+    name: 'command creating',
+    component: () => import('../views/TaskCreating.vue')
+  },
+
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: () => import('../views/NotFound.vue') // Или вашу страницу
+    component: () => import('../views/NotFound.vue')
   }
 
 ]
